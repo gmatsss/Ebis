@@ -1,3 +1,23 @@
 https://www.simplilearn.com/tutorials/git-tutorial/git-push-command
 tutorial how tp push
 
+//to check all the untracked files
+git status
+
+//to ready push to git
+git add alpha
+
+//to start push to git
+git commit -m "alpha.txt"
+
+//check the log files
+git log
+
+//link of your repo
+git remote add origin https://github.com/gmatsss/Ebis
+
+//to see the push and fetch
+git remote -v
+
+//to push in repo
+git push -u origin master
