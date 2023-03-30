@@ -3,46 +3,47 @@ const express = require("express"),
   Complain = require("../models/Lupon");
 DATE = require("./date");
 
-//logged in user
-const { getLoggedInUser } = require("./user");
-
 exports.create_complain = async (req, res) => {
   try {
+    let filehold = req.files.file; // library express file upload
+    filehold.mv(`../client/public/img/` + filehold.name); // to get the file in fetch by formdata and save in path/folder
     const caseno = req.body.caseno;
     const nameofcomp = req.body.nameofcomp;
-    const genderofcomp = req.body.genderofcomp;
-    const addressofcomp = req.body.addressofcomp;
-    const phoneofcomp = req.body.phoneofcomp;
-    const imageofcomp = req.body.imageofcomp;
-    const nameofresp = req.body.nameofresp;
-    const genderofresp = req.body.genderofresp;
-    const addressofresp = req.body.addressofresp;
-    const phoneofresp = req.body.phoneofresp;
-    const imageofresp = req.body.imageofresp;
-    const compdate = req.body.compdate;
-    const compnature = req.body.compnature;
-    const description = req.body.description;
-    const compstatus = req.body.compstatus;
 
-    // const Createdby = req.body.Createdby;
-    // const Modifiedby = req.body.Modifiedby;
+    // const genderofcomp = req.body.genderofcomp;
+    // const addressofcomp = req.body.addressofcomp;
+    // const phoneofcomp = req.body.phoneofcomp;
+    const imageofcomp = filehold.name;
+
+    // const nameofresp = req.body.nameofresp;
+    // const genderofresp = req.body.genderofresp;
+    // const addressofresp = req.body.addressofresp;
+    // const phoneofresp = req.body.phoneofresp;
+    // const imageofresp = req.body.imageofresp;
+    // const compdate = req.body.compdate;
+    // const compnature = req.body.compnature;
+    // const description = req.body.description;
+    // const compstatus = req.body.compstatus;
+
+    // // const Createdby = req.body.Createdby;
+    // // const Modifiedby = req.body.Modifiedby;
 
     const details = {
       caseno: caseno,
       nameofcomp: nameofcomp,
-      genderofcomp: genderofcomp,
-      addressofcomp: addressofcomp,
-      phoneofcomp: phoneofcomp,
+      // genderofcomp: genderofcomp,
+      // addressofcomp: addressofcomp,
+      // phoneofcomp: phoneofcomp,
       imageofcomp: imageofcomp,
-      nameofresp: nameofresp,
-      genderofresp: genderofresp,
-      addressofresp: addressofresp,
-      phoneofresp: phoneofresp,
-      imageofresp: imageofresp,
-      compdate: compdate,
-      compnature: compnature,
-      description: description,
-      compstatus: compstatus,
+      // nameofresp: nameofresp,
+      // genderofresp: genderofresp,
+      // addressofresp: addressofresp,
+      // phoneofresp: phoneofresp,
+      // imageofresp: imageofresp,
+      // compdate: compdate,
+      // compnature: compnature,
+      // description: description,
+      // compstatus: compstatus,
 
       DateCreated: DATE.dateWithTime(),
       Createdby: "sample",
@@ -71,7 +72,7 @@ exports.create_complain = async (req, res) => {
 exports.get_complain = async (req, res) => {
   try {
     //sort by code
-    const x = await Complain.find({ Status: 1 }).sort({ Code: 1 });
+    const x = await Complain.find({ Status: 1 }).sort({ DateCreated: 1 });
 
     if (!x) throw createError(403, "Complain Not found!");
 

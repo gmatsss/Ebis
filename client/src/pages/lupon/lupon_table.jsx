@@ -190,6 +190,16 @@ const lupon_table = (props) => {
     setChange(false);
   };
 
+  const handle_save = () => {
+    props.onStateform("SAVED");
+    setState(true);
+    setChange(false);
+    setData("");
+    setColumns("");
+    setRows("");
+    getHandler();
+  };
+
   //refresh code
   const handle_refresh = () => {
     props.onStateform("REFRESH");
@@ -230,7 +240,7 @@ const lupon_table = (props) => {
               className="btn-component"
               title="Add"
               size="lg"
-              //onClick={handle_add}
+              onClick={handle_save}
             >
               Saved
             </Button>

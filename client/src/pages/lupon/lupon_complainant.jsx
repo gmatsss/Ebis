@@ -3,8 +3,21 @@ import { Container, Row, Col } from "react-grid-system";
 import { TextField } from "@mui/material";
 import Button from "../../share/FormElements/Button";
 import { toast } from "react-toastify";
+import { useFetch } from "../../api/lupon";
 
 const lupon_complainant = (props) => {
+  const { sendRequest } = useFetch();
+  //file upload
+
+  const [selectedFile, setSelectedFile] = useState();
+
+  //form ustate code
+  const [complainant, setComplainant] = useState({
+    caseno: "",
+    nameofcomp: "",
+    imageofcomp: "",
+  });
+
   //form disabled
   const [commandAction, setCommandAction] = useState(false);
   const disableComponent = (status) => {
@@ -13,11 +26,36 @@ const lupon_complainant = (props) => {
 
   //data in holder
   const [datain, setDatain] = useState("-");
-  //form ustate code
-  const [complainant, setComplainant] = useState({
-    caseno: "",
-    nameofcomp: "",
-  });
+
+  const Datareceived = (datain) => {
+    setDatain(datain);
+  };
+
+  //file upload
+  const changeHandler = (event) => {
+    setSelectedFile(event.target.files[0]);
+    //setIsSelected(true);
+  };
+
+  const handle_saved = () => {
+    const formData = new FormData();
+
+    formData.append("file", selectedFile);
+    formData.append("caseno", complainant.caseno);
+    formData.append("nameofcomp", complainant.nameofcomp);
+
+    fetch("http://localhost:8001/lupon/create/record", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        console.log("Success:", result);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
 
   //instructions
   const [param, setParam] = useState(0);
@@ -29,24 +67,31 @@ const lupon_complainant = (props) => {
       setComplainant({
         caseno: "",
         nameofcomp: "",
+        imageofcomp: "",
       });
     } else if (param == "CANCEL") {
       setComplainant({
         caseno: "",
         nameofcomp: "",
+        imageofcomp: "",
       });
       setCommandAction(false);
     } else if (param == "REFRESH") {
       setComplainant({
         caseno: "",
         nameofcomp: "",
+        imageofcomp: "",
+      });
+      setCommandAction(false);
+    } else if (param == "SAVED") {
+      handle_saved();
+      setComplainant({
+        caseno: "",
+        nameofcomp: "",
+        imageofcomp: "",
       });
       setCommandAction(false);
     }
-  };
-
-  const Datareceived = (datain) => {
-    setDatain(datain);
   };
 
   useEffect(() => {
@@ -61,6 +106,7 @@ const lupon_complainant = (props) => {
       ...complainant,
       caseno: data_table.caseno,
       nameofcomp: data_table.nameofcomp,
+      imageofcomp: data_table.imageofcomp,
     });
   }, [props, datain]);
 
@@ -131,21 +177,45 @@ const lupon_complainant = (props) => {
       </Col>
       <Col>
         <div className="container">
-          <div className="card" style={{ width: "10%" }}>
+          <div className="card" style={{ width: "15%" }}>
             <img
               className="card-img-top"
-              src="/img/lire.jpg"
+              src={`/img/${
+                !complainant.imageofcomp
+                  ? "default.jpg"
+                  : complainant.imageofcomp
+              }`}
               alt="Card image"
-              style={{ width: "100%" }}
+              height="150"
+              style={{ maxWidth: "100%" }}
             />
           </div>
-        </div>
-
-        <div className="input-file-container">
-          <input className="input-file" id="my-file" type="file" />
-          <label tabIndex="0" For="my-file" className="input-file-trigger">
-            Browse Img
-          </label>
+          <div className="input-file-container" style={{ width: "15%" }}>
+            <input
+              disabled={!commandAction ? "disabled" : ""}
+              className="input-file"
+              type="file"
+              name="file"
+              onChange={changeHandler}
+              style={
+                !commandAction
+                  ? { backgroundColor: "lightgrey" }
+                  : { backgroundColor: "" }
+              }
+            />
+            <label
+              tabIndex="0"
+              For="my-file"
+              className="input-file-trigger"
+              style={
+                !commandAction
+                  ? { backgroundColor: "lightgrey", color: "lightgrey" }
+                  : { backgroundColor: "" }
+              }
+            >
+              Select file
+            </label>
+          </div>
         </div>
 
         {/* end of img */}

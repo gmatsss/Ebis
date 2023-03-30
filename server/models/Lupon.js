@@ -22,6 +22,7 @@ var Complain = new mongoose.Schema({
   compnature: String,
   description: String,
   compstatus: String,
+  DateCreated: String,
   Createdby: String,
   DateModified: String,
   Modifiedby: String,
