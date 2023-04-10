@@ -1,4 +1,10 @@
-import React, { useCallback, useState, useEffect, useContext } from "react";
+import React, {
+  useCallback,
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+} from "react";
 import { toast } from "react-toastify";
 
 import MaterialReactTable from "material-react-table";
@@ -98,9 +104,15 @@ const citizen_table = (props) => {
   };
 
   let title = "Citizen";
+  let shouldlog = useRef(true);
 
   useEffect(() => {
-    getHandler();
+    if (shouldlog.current) {
+      shouldlog.current = false;
+      getHandler();
+    }
+
+    return () => console.log("function cleaned up");
   }, []);
 
   const tableHandler = () => {

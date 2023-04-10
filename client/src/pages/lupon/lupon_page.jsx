@@ -36,21 +36,64 @@ const lupon_page = () => {
     //alert('handler=' + handler);
   };
 
+  const [reloadinfo, setreloadinfo] = useState(true);
+
+  let Passreload = (reloadinfo) => {};
+  // Data holder and passing to lupon forms
+  const Getreload = (reloadinfo) => {
+    Passreload && Passreload(reloadinfo);
+  };
+  //bridge to pass to lupon form
+  const PassreloadCreator = (handler) => {
+    Passreload = handler;
+  };
+
   return (
-    <Container fluid>
-      <Row className="parent">
-        <Col className="" xs={12} sm={12} md={9} lg={10.2}>
-          {/* Getdata is the data have been pass to the lupon table */}
-          <Lupon_table onPassdata={Getdata} onStateform={trigger} />
-        </Col>
-        <Col className="" xs={12} sm={12} md={3} lg={12}>
-          <Lupon_complainant
-            PassdataCreator={PassdataCreator}
-            receiverCreator={receiverCreator}
+    <div
+      className="container-lg-12 px-1"
+      style={{ height: "100%", backgroundColor: "" }}
+    >
+      <div className="row ">
+        {/* sm 425px */}
+        <div className="col-md-12 col-lg-12">
+          <div className="py-1 text-muted row">
+            <div className="col d-flex justify-content-between">
+              <div>
+                <h1>Barangay San Antonio, Makati City, Metro Manila </h1>
+              </div>
+
+              <div>
+                <img src={`/img/logo.jpg`} alt="" style={{ height: "70px" }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="row ">
+        {/* sm 425px */}
+        <div className="col-md-12 col-lg-12">
+          <div className="p-3">
+            {" "}
+            <Lupon_complainant
+              PassdataCreator={PassdataCreator}
+              receiverCreator={receiverCreator}
+              onReload={Getreload}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="row ">
+        {/* sm 425px */}
+        <div className="px-3  col-md-12 col-lg-12">
+          <Lupon_table
+            onPassdata={Getdata}
+            onStateform={trigger}
+            PassreloadCreator={PassreloadCreator}
           />
-        </Col>
-      </Row>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 };
 

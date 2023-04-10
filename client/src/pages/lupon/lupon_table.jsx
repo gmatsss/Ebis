@@ -1,17 +1,32 @@
 //sfc stateless function
-import React, { useContext, useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 //usercontent
 import { UserContext } from "../../UserContext";
 
 import { toast } from "react-toastify";
 
-import MaterialReactTable from "material-react-table";
+import MaterialReactTable, {
+  MRT_ToggleFiltersButton,
+  MRT_ShowHideColumnsButton,
+  MRT_ToggleGlobalFilterButton,
+} from "material-react-table";
+import RefreshIcon from "@mui/icons-material/Refresh";
 //theme
 import { createTheme, ThemeProvider, useTheme } from "@mui/material";
 
+import { Box, Button, TextField, IconButton, Tooltip } from "@mui/material";
+import { Delete, Edit, Rowing } from "@mui/icons-material";
+import CreateIcon from "@mui/icons-material/Create";
+import AddIcon from "@mui/icons-material/Add";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
+
+//popup
+import Notiflix from "notiflix";
+
 //sirlex style
 import { Container, Row, Col } from "react-grid-system";
-import Button from "../../share/FormElements/Button";
+import Button_lex from "../../share/FormElements/Button";
 
 //api
 import { useFetch } from "../../api/lupon";
@@ -19,6 +34,9 @@ import { useFetch } from "../../api/lupon";
 const lupon_table = (props) => {
   // hooks
   const { sendRequest } = useFetch();
+
+  //reload
+  const [reload, setReload] = useState();
 
   //data
   const [columns, setColumns] = useState([]);
@@ -33,6 +51,7 @@ const lupon_table = (props) => {
         success: "Data loaded",
         error: `Error`,
       });
+
       setData(result);
 
       if (result && result.error) return toast.error({ error: result.error });
@@ -43,21 +62,63 @@ const lupon_table = (props) => {
     }
   };
 
+  const handleDeleteRow = (data) => {
+    Notiflix.Confirm.show(
+      "Delete ",
+      "Delete this record?",
+      "Yes",
+      "No",
+      async function okCb() {
+        const formData = new FormData();
+        formData.append("_id", data.original._id);
+        const result = await sendRequest("/d/record", "POST", formData);
+        if (result.error) toast.error(result.error);
+        handle_refresh();
+      },
+      function cancelCb() {
+        return;
+      },
+      {
+        width: "320px",
+        borderRadius: "8px",
+        // etc...
+      }
+    );
+  };
+
+  let shouldlog = useRef(true);
   useEffect(() => {
-    getHandler();
+    if (shouldlog.current) {
+      shouldlog.current = false;
+      getHandler();
+    }
   }, []);
 
   const tableHandler = () => {
     try {
       const column = [
         {
-          header: "caseno",
+          header: "Case no",
           accessorKey: "caseno",
         },
-        { header: "nameofcomp", accessorKey: "nameofcomp" },
+        { header: "Name of Complainant", accessorKey: "nameofcomp" },
+
+        { header: "Gender", accessorKey: "genderofcomp" },
+        { header: "Address", accessorKey: "addressofcomp" },
+        { header: "Phone no#", accessorKey: "phoneofcomp" },
         {
-          header: "imageofcomp",
+          header: "Image",
           accessorKey: "imageofcomp",
+          enableEditing: false,
+        },
+        { header: "Name of Respondent", accessorKey: "nameofresp" },
+
+        { header: "Gender", accessorKey: "genderofresp" },
+        { header: "Address", accessorKey: "addressofresp" },
+        { header: "Phone no#", accessorKey: "phoneofresp" },
+        {
+          header: "Image",
+          accessorKey: "imageofresp",
           enableEditing: false,
         },
         {
@@ -84,6 +145,16 @@ const lupon_table = (props) => {
         },
         { header: "Status", accessorKey: "Status", enableEditing: false },
         { header: "_id", accessorKey: "_id", enableEditing: false },
+        {
+          header: "Delete",
+          Cell: ({ row }) => (
+            <Tooltip arrow placement="right" title="Delete">
+              <Delete color="error" onClick={() => handleDeleteRow(row)} />
+            </Tooltip>
+          ),
+          size: 20, //small column
+          accessorKey: "Delete",
+        },
       ];
 
       //insert data to table
@@ -93,7 +164,16 @@ const lupon_table = (props) => {
           _id: x._id,
           caseno: x.caseno,
           nameofcomp: x.nameofcomp,
+          genderofcomp: x.genderofcomp,
+          addressofcomp: x.addressofcomp,
+          phoneofcomp: x.phoneofcomp,
           imageofcomp: x.imageofcomp,
+          nameofresp: x.nameofresp,
+          genderofresp: x.genderofresp,
+          addressofresp: x.addressofresp,
+          phoneofresp: x.phoneofresp,
+          imageofresp: x.imageofresp,
+
           DateCreated: x.DateCreated,
           Createdby: x.Createdby,
           DateModified: x.DateModified,
@@ -175,7 +255,7 @@ const lupon_table = (props) => {
   //optionally, you can manage the row selection state yourself
   const [rowSelection, setRowSelection] = useState({});
   //setting row id to form
-  const [rowid, setRowid] = useState({});
+  const [rowid, setRowid] = useState("");
 
   const handle_add = () => {
     props.onStateform("ADD");
@@ -188,16 +268,12 @@ const lupon_table = (props) => {
     props.onStateform("CANCEL");
     setState(true);
     setChange(false);
+    setRowSelection({});
+    setRowid("");
   };
 
   const handle_save = () => {
     props.onStateform("SAVED");
-    setState(true);
-    setChange(false);
-    setData("");
-    setColumns("");
-    setRows("");
-    getHandler();
   };
 
   //refresh code
@@ -208,6 +284,17 @@ const lupon_table = (props) => {
     setRows("");
     getHandler();
     setRowSelection({});
+    setRowid("");
+    setState(true);
+    setChange(false);
+  };
+
+  //edit
+  const handle_edit = () => {
+    if (!rowid) return toast.warning("Please Select Case from the table");
+    props.onStateform("EDIT");
+    setState(false);
+    setChange(true);
   };
 
   //passing data to form
@@ -218,72 +305,38 @@ const lupon_table = (props) => {
     props.onPassdata(Data);
   };
 
+  props.PassreloadCreator(handle_refresh);
+
   return (
     <ThemeProvider theme={tableTheme}>
-      <Row>
-        {!change ? (
-          <Col xs={12} md={12} lg={1}>
-            <Button
-              variant="primary"
-              className="btn-component"
-              title="Add"
-              size="lg"
-              onClick={handle_add}
-            >
-              ADD
-            </Button>
-          </Col>
-        ) : (
-          <Col xs={12} md={12} lg={1}>
-            <Button
-              variant="success"
-              className="btn-component"
-              title="Add"
-              size="lg"
-              onClick={handle_save}
-            >
-              Saved
-            </Button>
-          </Col>
-        )}
-        {!change ? (
-          <Col xs={12} md={12} lg={1}>
-            <Button
-              variant="success"
-              className="btn-component"
-              title="Add"
-              size="lg"
-              onClick={handle_refresh}
-            >
-              Refresh
-            </Button>
-          </Col>
-        ) : (
-          <Col xs={12} md={12} lg={1}>
-            <Button
-              variant="success"
-              className="btn-component"
-              title="Add"
-              size="lg"
-              onClick={handle_cancel}
-            >
-              Cancel
-            </Button>
-          </Col>
-        )}
-      </Row>
       <br />
-      <div
-        style={
-          state
-            ? { pointerEvents: "auto", opacity: "1" }
-            : { pointerEvents: "none", opacity: "0.2" }
-        }
-      >
+      <div>
         <MaterialReactTable
           columns={columns}
           data={rows}
           getRowId={(row) => row._id}
+          positionToolbarAlertBanner="none"
+          renderTopToolbarCustomActions={({ table }) => (
+            <div>
+              <div className="col mx-2">
+                <button className="btn btn-outline-primary active">
+                  Complainant / Respondent
+                </button>
+                <button className="btn btn-outline-primary">Complain</button>
+                <button className="btn btn-outline-primary">Documents</button>
+                <button className="btn btn-outline-primary">
+                  Lupon Member / Action taken
+                </button>
+              </div>
+            </div>
+          )}
+          muiTableBodyCellProps={{
+            sx: {
+              border: "0px", //remove border
+              pointerEvents: state ? "auto" : "none",
+              opacity: state ? "1" : "0.2",
+            },
+          }}
           muiTableBodyRowProps={({ row }) => ({
             //implement row selection click events manually
             //getting the data id
@@ -308,18 +361,97 @@ const lupon_table = (props) => {
           })}
           state={{ rowSelection }}
           initialState={{
-            pagination: { pageSize: 5, pageIndex: 0 },
+            pagination: {
+              pageSize: 5,
+              pageIndex: 0,
+            },
             density: "compact",
             columnVisibility: {
               Createdby: false,
               DateCreated: false,
               Status: false,
               _id: false,
+
+              addressofcomp: false,
+              addressofresp: false,
+              imageofresp: false,
+              Modifiedby: false,
             },
           }}
+          //customize built-in buttons in the top-right of top toolbar
+          renderToolbarInternalActions={({ table }) => (
+            <Box>
+              {/* add custom button to print table  */}
+
+              {!change ? (
+                <Button_lex
+                  variant="primary"
+                  title="Add"
+                  size="lg"
+                  onClick={handle_add}
+                >
+                  {/* <AddIcon /> */}
+                  Create
+                </Button_lex>
+              ) : (
+                <Button_lex
+                  variant="success"
+                  className="btn-component"
+                  title="Save"
+                  size="lg"
+                  onClick={handle_save}
+                >
+                  <span className="d-flex justify-content-around">
+                    {/* <SaveIcon /> */}
+                    Save
+                  </span>
+                </Button_lex>
+              )}
+
+              {!change ? (
+                <Button_lex
+                  variant="success"
+                  className="btn-component ms-1"
+                  title="Add"
+                  size="lg"
+                  onClick={handle_edit}
+                >
+                  <span className="d-flex justify-content-around">
+                    {/* <CreateIcon /> */}
+                    Edit
+                  </span>
+                </Button_lex>
+              ) : (
+                <Button_lex
+                  variant="danger"
+                  className="btn-component ms-1"
+                  title="Add"
+                  size="lg"
+                  onClick={handle_cancel}
+                >
+                  <span className="d-flex justify-content-around">
+                    {/* <CancelIcon /> */}
+                    Cancel
+                  </span>
+                </Button_lex>
+              )}
+
+              {/* along-side built-in buttons in whatever order you want them */}
+              <MRT_ToggleGlobalFilterButton table={table} />
+              <MRT_ToggleFiltersButton table={table} />
+              <MRT_ShowHideColumnsButton table={table} />
+              <IconButton
+                title="Refresh"
+                onClick={() => {
+                  handle_refresh();
+                }}
+              >
+                <RefreshIcon />
+              </IconButton>
+            </Box>
+          )}
         />
       </div>
-      <br />
     </ThemeProvider>
   );
 };

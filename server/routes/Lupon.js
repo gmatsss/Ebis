@@ -12,11 +12,11 @@ const {
   update_complain,
   delete_complain,
 } = require("../controllers/Lupon");
-// const { upload_file } = require("../middleware/file_upload");
+const { file_upload } = require("../middleware/file_upload");
 
-router.post("/create/record", create_complain);
+router.post("/create/record", create_complain, file_upload);
 router.get("/g/record", get_complain);
-router.post("/u/record", update_complain);
+router.post("/u/record", update_complain, file_upload);
 //softdelete
 router.post("/d/record", delete_complain);
 

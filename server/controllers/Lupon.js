@@ -3,27 +3,18 @@ const express = require("express"),
   Complain = require("../models/Lupon");
 DATE = require("./date");
 
-exports.create_complain = async (req, res) => {
+exports.create_complain = async (req, res, next) => {
   try {
-    let filehold = req.files.file; // library express file upload
-    filehold.mv(`../client/public/img/` + filehold.name); // to get the file in fetch by formdata and save in path/folder
     const caseno = req.body.caseno;
     const nameofcomp = req.body.nameofcomp;
+    const genderofcomp = req.body.genderofcomp;
+    const addressofcomp = req.body.addressofcomp;
+    const phoneofcomp = req.body.phoneofcomp;
 
-    // const genderofcomp = req.body.genderofcomp;
-    // const addressofcomp = req.body.addressofcomp;
-    // const phoneofcomp = req.body.phoneofcomp;
-    const imageofcomp = filehold.name;
-
-    // const nameofresp = req.body.nameofresp;
-    // const genderofresp = req.body.genderofresp;
-    // const addressofresp = req.body.addressofresp;
-    // const phoneofresp = req.body.phoneofresp;
-    // const imageofresp = req.body.imageofresp;
-    // const compdate = req.body.compdate;
-    // const compnature = req.body.compnature;
-    // const description = req.body.description;
-    // const compstatus = req.body.compstatus;
+    const nameofresp = req.body.nameofresp;
+    const genderofresp = req.body.genderofresp;
+    const addressofresp = req.body.addressofresp;
+    const phoneofresp = req.body.phoneofresp;
 
     // // const Createdby = req.body.Createdby;
     // // const Modifiedby = req.body.Modifiedby;
@@ -31,20 +22,20 @@ exports.create_complain = async (req, res) => {
     const details = {
       caseno: caseno,
       nameofcomp: nameofcomp,
-      // genderofcomp: genderofcomp,
-      // addressofcomp: addressofcomp,
-      // phoneofcomp: phoneofcomp,
-      imageofcomp: imageofcomp,
-      // nameofresp: nameofresp,
-      // genderofresp: genderofresp,
-      // addressofresp: addressofresp,
-      // phoneofresp: phoneofresp,
-      // imageofresp: imageofresp,
-      // compdate: compdate,
-      // compnature: compnature,
-      // description: description,
-      // compstatus: compstatus,
+      genderofcomp: genderofcomp,
+      addressofcomp: addressofcomp,
+      phoneofcomp: phoneofcomp,
+      imageofcomp: "",
+      nameofresp: nameofresp,
+      genderofresp: genderofresp,
+      addressofresp: addressofresp,
+      phoneofresp: phoneofresp,
+      imageofresp: "",
 
+      compdate: "",
+      compnature: "",
+      description: "",
+      compstatus: "",
       DateCreated: DATE.dateWithTime(),
       Createdby: "sample",
       DateModified: DATE.dateWithTime(),
@@ -55,15 +46,15 @@ exports.create_complain = async (req, res) => {
     console.log(details);
 
     const case_exist = await Complain.findOne({ caseno: caseno });
-    if (case_exist)
-      throw createError(403, `caseno ${caseno} already registered!`);
+    if (case_exist) throw createError(403, `Case No ${caseno} already saved!`);
 
     const newComplain = new Complain(details);
     const x = await newComplain.save(); //saving to db
 
     if (!x) throw createError(403, "Something went wrong while creating");
-    console.log(x);
-    res.send({ success: `Successfully Created` });
+
+    req.fromthis = x._id;
+    next();
   } catch (e) {
     res.send({ error: e.message });
   }
@@ -72,7 +63,7 @@ exports.create_complain = async (req, res) => {
 exports.get_complain = async (req, res) => {
   try {
     //sort by code
-    const x = await Complain.find({ Status: 1 }).sort({ DateCreated: 1 });
+    const x = await Complain.find({ Status: 1 }).sort({ DateCreated: -1 });
 
     if (!x) throw createError(403, "Complain Not found!");
 
@@ -85,33 +76,32 @@ exports.get_complain = async (req, res) => {
   }
 };
 
-exports.update_complain = async (req, res) => {
+exports.update_complain = async (req, res, next) => {
   try {
     const caseno = req.body.caseno;
     const nameofcomp = req.body.nameofcomp;
     const genderofcomp = req.body.genderofcomp;
     const addressofcomp = req.body.addressofcomp;
     const phoneofcomp = req.body.phoneofcomp;
-    const imageofcomp = req.body.imageofcomp;
+
     const nameofresp = req.body.nameofresp;
     const genderofresp = req.body.genderofresp;
     const addressofresp = req.body.addressofresp;
     const phoneofresp = req.body.phoneofresp;
-    const imageofresp = req.body.imageofresp;
-    const compdate = req.body.compdate;
-    const compnature = req.body.compnature;
-    const description = req.body.description;
-    const compstatus = req.body.compstatus;
-    //change later modified by
-    const Modifiedby = req.body.Modifiedby;
+
+    // const compdate = req.body.compdate;
+    // const compnature = req.body.compnature;
+    // const description = req.body.description;
+    // const compstatus = req.body.compstatus;
+    // //change later modified by
+    // const Modifiedby = req.body.Modifiedby;
     const _id = req.body._id;
 
     const case_exist = await Complain.findOne({
       caseno: caseno,
       _id: { $ne: _id },
     });
-    if (case_exist)
-      throw createError(403, `Code ${caseno} already registered!`);
+    if (case_exist) throw createError(403, `Case No ${caseno} already saved!`);
 
     const x = await Complain.findOne({ _id: _id });
     if (!x) throw createError(403, `Complain not found!`);
@@ -121,24 +111,24 @@ exports.update_complain = async (req, res) => {
     x.genderofcomp = genderofcomp;
     x.addressofcomp = addressofcomp;
     x.phoneofcomp = phoneofcomp;
-    x.imageofcomp = imageofcomp;
     x.nameofresp = nameofresp;
     x.genderofresp = genderofresp;
     x.addressofresp = addressofresp;
     x.phoneofresp = phoneofresp;
-    x.imageofresp = imageofresp;
-    x.compdate = compdate;
-    x.compnature = compnature;
-    x.description = description;
-    x.compstatus = compstatus;
+
+    // x.compdate = compdate;
+    // x.compnature = compnature;
+    // x.description = description;
+    // x.compstatus = compstatus;
 
     //later update
-    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = Modifiedby);
+    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = "sample");
     x.save();
 
     // console.log(x);
 
-    res.send({ success: "Successfully Edit" });
+    req.fromthis = x._id;
+    next();
   } catch (e) {
     res.send({ error: e.message });
   }
@@ -148,18 +138,15 @@ exports.update_complain = async (req, res) => {
 exports.delete_complain = async (req, res) => {
   try {
     const _id = req.body._id;
-    const Modifiedby = req.body.Modifiedby;
-    //import modifiedby later
+
+    // const Modifiedby = req.body.Modifiedby;
 
     const x = await Complain.findOne({ _id: _id });
-    if (!x) throw createError(403, `Citizen not found!`);
+    if (!x) throw createError(403, `Case not found!`);
     x.Status = 0;
-    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = Modifiedby);
+    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = "");
     x.save();
-
-    console.log(x);
-
-    res.send({ success: "Complain Successfully Delete" });
+    res.send({ success: "Case Successfully Delete" });
   } catch (e) {
     res.send({ error: e.message });
   }

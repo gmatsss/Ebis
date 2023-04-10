@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -15,15 +15,24 @@ const Logout = () => {
   const Logout_func = () => {
     //handler for logut
 
-    logout()
-      .then((res) => {
-        toast.success(res.message);
-        //set user to null if logout
-        setUser(null);
-        //redirect back to login
-        history.push("/login");
-      })
-      .catch((err) => console.error(err));
+    let shouldlog = useRef(true);
+
+    useEffect(() => {
+      if (shouldlog.current) {
+        shouldlog.current = false;
+        logout()
+          .then((res) => {
+            toast.success(res.message);
+            //set user to null if logout
+            setUser(null);
+            //redirect back to login
+            history.push("/login");
+          })
+          .catch((err) => console.error(err));
+      }
+
+      return () => console.log("function cleaned up");
+    }, []);
   };
 
   return Logout_func();

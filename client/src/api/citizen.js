@@ -15,7 +15,7 @@ export const useFetch = () => {
       const getUrl = (endpoint) => {
         // return `${'http://127.0.0.1:3001/api'}${endpoint}`
         //like the .env
-        return `${"http://localhost:8001/api"}${endpoint}`;
+        return `${`${import.meta.env.VITE_REACT_API_URL}/api`}${endpoint}`;
       };
       if (method === "GET") {
         return new Promise((resolve, reject) => {

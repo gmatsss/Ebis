@@ -9,19 +9,19 @@ export const useFetch = () => {
       path,
       method = "GET",
       formData,
-      headers = { "Content-Type": "application/json" },
-      isFormData = false
+      // headers = { "Content-Type": "application/json" },
+      isFormData = true
     ) => {
       const getUrl = (endpoint) => {
         // return `${'http://127.0.0.1:3001/api'}${endpoint}`
         //like the .env
-        return `${"http://localhost:8001/lupon"}${endpoint}`;
+        return `${`${import.meta.env.VITE_REACT_API_URL}/lupon`}${endpoint}`;
       };
       if (method === "GET") {
         return new Promise((resolve, reject) => {
           var requestOptions = {
             method: method,
-            headers: headers,
+            // headers: headers,
             redirect: "follow",
             credentials: "include",
             signal: abortController.signal,
@@ -56,7 +56,7 @@ export const useFetch = () => {
         return new Promise((resolve, reject) => {
           var requestOptions = {
             method: "POST",
-            headers: headers,
+            // headers: headers,
             // body: JSON.stringify(formData),
             body: isFormData ? formData : JSON.stringify(formData),
             redirect: "follow",

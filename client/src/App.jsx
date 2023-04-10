@@ -45,6 +45,24 @@ const App = () => {
       })
       .catch((err) => toast(err));
   }, []);
+
+  //userlogin
+  function Greeting(props) {
+    const isLoggedIn = props.isLoggedIn;
+    if (isLoggedIn) {
+      return (
+        <SideBar>
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route exact path="/user" component={User} />
+            <Route exact path="/logout" component={Logout} />
+            <Route exact path="/citizen_page" component={citizen_page} />
+            <Route exact path="/lupon_page" component={lupon_page} />
+          </Switch>
+        </SideBar>
+      );
+    }
+  }
   return (
     <div>
       <Router>
@@ -67,28 +85,14 @@ const App = () => {
             pauseOnHover
             theme="dark"
           />
-
-          {!user ? (
-            <Header />
-          ) : (
-            <SideBar>
-              <Switch>
-                <Route exact path="/" component={Home} />
-                <Route exact path="/user" component={User} />
-                <Route exact path="/logout" component={Logout} />
-                <Route exact path="/citizen_page" component={citizen_page} />
-                <Route exact path="/lupon_page" component={lupon_page} />
-              </Switch>
-            </SideBar>
-          )}
-
+          <Header />
+          {/* userlogin sidebar */}
+          <Greeting isLoggedIn={user} />
           {/*
             using redirect react-router-dom it will 
             redirect to homepage if try to acces it in url
             */}
-
           <Redirect to={user ? "/" : "login"} />
-
           <Route exact path="/Signup" component={Signup} />
           <Route exact path="/Login" component={Login} />
         </UserContext.Provider>

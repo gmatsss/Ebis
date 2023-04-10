@@ -3,17 +3,12 @@ const express = require("express"),
   Citizen = require("../models/Citizen");
 DATE = require("./date");
 
-//logged in user
-const { getLoggedInUser } = require("../controllers/user");
-
 exports.create_citizen = async (req, res) => {
   try {
     const Code = req.body.Code;
     const Description = req.body.Description;
     const Createdby = req.body.Createdby;
     const Modifiedby = req.body.Modifiedby;
-
-    console.log(`${Code}`);
 
     const details = {
       Code: Code,

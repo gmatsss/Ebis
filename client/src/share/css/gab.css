@@ -1,6 +1,6 @@
 .input-file-container {
     position: relative;
-    width: 225px;
+    width: 100%;
   } 
    .input-file-trigger {
     display: block;

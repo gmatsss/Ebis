@@ -150,7 +150,7 @@ const citizen_form = (props) => {
       <Container fluid>
         <Row>
           {!change ? (
-            <Col>
+            <Col lg={6}>
               <Button
                 variant="success"
                 className="btn-component"
@@ -162,7 +162,7 @@ const citizen_form = (props) => {
               </Button>
             </Col>
           ) : (
-            <Col>
+            <Col lg={6}>
               <Button
                 variant="primary"
                 className="btn-component"
@@ -175,7 +175,7 @@ const citizen_form = (props) => {
             </Col>
           )}
           {!change ? (
-            <Col>
+            <Col lg={6}>
               <Button
                 variant="warning"
                 className="btn-component"
@@ -186,7 +186,7 @@ const citizen_form = (props) => {
               </Button>
             </Col>
           ) : (
-            <Col>
+            <Col lg={6}>
               <Button
                 variant="danger"
                 className="btn-component"
