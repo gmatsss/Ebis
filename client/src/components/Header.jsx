@@ -28,8 +28,8 @@ const Header = () => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-      <span className="navbar-brand m-1">Auth Login</span>
+    <nav className="navbar navbar-expand-sm navbar-dark bg-primary">
+      <span className="navbar-brand ms-4">Dashboard</span>
 
       <div className="collapse navbar-collapse d-flex flex-row-reverse" id="">
         <ul className="navbar-nav ml-auto">
@@ -51,19 +51,16 @@ const Header = () => {
               </>
             ) : (
               <li className="nav-item  d-flex flex-row">
-                <span
+                {/* <span
                   style={{ cursor: "pointer" }}
                   className="nav-link"
                   onClick={Logout_func}
                 >
                   Logout
-                </span>
-                <Link style={{ cursor: "pointer" }} className="nav-link" to="/">
+                </span> */}
+                {/* <Link style={{ cursor: "pointer" }} className="nav-link" to="/">
                   Home
-                </Link>
-                <Link className="nav-link" to="/user">
-                  user
-                </Link>
+                </Link> */}
               </li>
             )
           }

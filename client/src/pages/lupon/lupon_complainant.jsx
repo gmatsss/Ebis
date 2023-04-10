@@ -159,8 +159,9 @@ const lupon_complainant = (props) => {
     // console.log(param);
     setParam(param);
     if (param == "ADD") {
-      setCommandAction(true);
       reset_input();
+      setCommandAction(true);
+      console.log(complainant);
     } else if (param == "CANCEL") {
       reset_input();
       setCommandAction(false);
@@ -182,6 +183,7 @@ const lupon_complainant = (props) => {
     //setting datain datas
     const data_table = datain[0];
 
+    // console.log(data_table);
     //ustate using form ustate
     setComplainant({
       ...complainant,
@@ -198,7 +200,7 @@ const lupon_complainant = (props) => {
       phoneofresp: data_table.phoneofresp,
       imageofresp: data_table.imageofresp,
     });
-  }, [props, datain]);
+  }, [datain]);
 
   //bridge data incoming to lupon page
   props.PassdataCreator(Datareceived);

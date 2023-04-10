@@ -43,6 +43,8 @@ const lupon_table = (props) => {
   const [rows, setRows] = useState([]);
   const [data, setData] = useState();
 
+  const [active, setActive] = useState(0);
+
   const getHandler = async () => {
     try {
       //alert loading
@@ -261,7 +263,9 @@ const lupon_table = (props) => {
     props.onStateform("ADD");
     setState(false);
     setChange(true);
+    setRowid("");
     setRowSelection({});
+    change_handle(0);
   };
 
   const handle_cancel = () => {
@@ -305,6 +309,11 @@ const lupon_table = (props) => {
     props.onPassdata(Data);
   };
 
+  const change_handle = (show) => {
+    props.onShowpage(show);
+    setActive(show);
+  };
+
   props.PassreloadCreator(handle_refresh);
 
   return (
@@ -317,17 +326,48 @@ const lupon_table = (props) => {
           getRowId={(row) => row._id}
           positionToolbarAlertBanner="none"
           renderTopToolbarCustomActions={({ table }) => (
-            <div>
-              <div className="col mx-2">
-                <button className="btn btn-outline-primary active">
-                  Complainant / Respondent
-                </button>
-                <button className="btn btn-outline-primary">Complain</button>
-                <button className="btn btn-outline-primary">Documents</button>
-                <button className="btn btn-outline-primary">
-                  Lupon Member / Action taken
-                </button>
-              </div>
+            <div className="col mx-2">
+              <button
+                className={`btn btn-outline-dark  ${
+                  active === 0 ? `active` : ``
+                }`}
+                onClick={() => {
+                  change_handle(0);
+                }}
+              >
+                Complainant / Respondent
+              </button>
+              <button
+                className={`btn btn-outline-dark ms-1 ${
+                  active === 1 ? `active` : ``
+                }`}
+                onClick={() => {
+                  change_handle(1);
+                }}
+              >
+                Complain
+              </button>
+              <button
+                className={`btn btn-outline-dark ms-1 ${
+                  active === 2 ? `active` : ``
+                }`}
+                onClick={() => {
+                  change_handle(2);
+                }}
+              >
+                Documents
+              </button>
+
+              <button
+                className={`btn btn-outline-dark ms-1 ${
+                  active === 3 ? `active` : ``
+                }`}
+                onClick={() => {
+                  change_handle(3);
+                }}
+              >
+                Lupon Member / Action taken
+              </button>
             </div>
           )}
           muiTableBodyCellProps={{

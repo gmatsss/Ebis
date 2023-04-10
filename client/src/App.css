@@ -28,8 +28,8 @@ main {
   background: rgb(0, 7, 61);
   color: white;
   overflow-y: auto;
-  min-height:100vh;
-  max-height: max-content
+  min-height: 94vh;
+  max-height: max-content;
 }
 
 .top_section {

@@ -5,8 +5,17 @@ import "../../share/css/gab.css";
 //components
 import Lupon_table from "./lupon_table";
 import Lupon_complainant from "./lupon_complainant";
+import Lupon_complain from "./lupon_complain";
 
 const lupon_page = () => {
+  //show page
+  const [show, setShow] = useState(0);
+
+  const show_handle = (show) => {
+    // console.log(show);
+    setShow(show);
+  };
+
   //onclick table pass to form lupon
   const [datainfo, setDatainfo] = useState({});
   //data holder
@@ -73,12 +82,17 @@ const lupon_page = () => {
         {/* sm 425px */}
         <div className="col-md-12 col-lg-12">
           <div className="p-3">
-            {" "}
-            <Lupon_complainant
-              PassdataCreator={PassdataCreator}
-              receiverCreator={receiverCreator}
-              onReload={Getreload}
-            />
+            <div style={show === 0 ? { display: "" } : { display: "none" }}>
+              <Lupon_complainant
+                PassdataCreator={PassdataCreator}
+                receiverCreator={receiverCreator}
+                onReload={Getreload}
+              />
+            </div>
+
+            <div style={show === 1 ? { display: "" } : { display: "none" }}>
+              <Lupon_complain />
+            </div>
           </div>
         </div>
       </div>
@@ -90,6 +104,7 @@ const lupon_page = () => {
             onPassdata={Getdata}
             onStateform={trigger}
             PassreloadCreator={PassreloadCreator}
+            onShowpage={show_handle}
           />
         </div>
       </div>
