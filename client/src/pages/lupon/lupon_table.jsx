@@ -16,10 +16,9 @@ import { createTheme, ThemeProvider, useTheme } from "@mui/material";
 
 import { Box, Button, TextField, IconButton, Tooltip } from "@mui/material";
 import { Delete, Edit, Rowing } from "@mui/icons-material";
-import CreateIcon from "@mui/icons-material/Create";
-import AddIcon from "@mui/icons-material/Add";
-import SaveIcon from "@mui/icons-material/Save";
-import CancelIcon from "@mui/icons-material/Cancel";
+
+//animate
+import { motion } from "framer-motion";
 
 //popup
 import Notiflix from "notiflix";
@@ -34,9 +33,6 @@ import { useFetch } from "../../api/lupon";
 const lupon_table = (props) => {
   // hooks
   const { sendRequest } = useFetch();
-
-  //reload
-  const [reload, setReload] = useState();
 
   //data
   const [columns, setColumns] = useState([]);
@@ -124,6 +120,26 @@ const lupon_table = (props) => {
           enableEditing: false,
         },
         {
+          header: "compdate",
+          accessorKey: "compdate",
+          enableEditing: false,
+        },
+        {
+          header: "compnature",
+          accessorKey: "compnature",
+          enableEditing: false,
+        },
+        {
+          header: "description",
+          accessorKey: "description",
+          enableEditing: false,
+        },
+        {
+          header: "compstatus",
+          accessorKey: "compstatus",
+          enableEditing: false,
+        },
+        {
           header: "DateCreated",
           accessorKey: "DateCreated",
           enableEditing: false,
@@ -175,6 +191,11 @@ const lupon_table = (props) => {
           addressofresp: x.addressofresp,
           phoneofresp: x.phoneofresp,
           imageofresp: x.imageofresp,
+
+          compdate: x.compdate,
+          compnature: x.compnature,
+          description: x.description,
+          compstatus: x.compstatus,
 
           DateCreated: x.DateCreated,
           Createdby: x.Createdby,
@@ -307,6 +328,7 @@ const lupon_table = (props) => {
     setRowid(Data);
     //to pass data to lupon page component
     props.onPassdata(Data);
+    props.onPassdata_2(Data);
   };
 
   const change_handle = (show) => {
@@ -327,7 +349,10 @@ const lupon_table = (props) => {
           positionToolbarAlertBanner="none"
           renderTopToolbarCustomActions={({ table }) => (
             <div className="col mx-2">
-              <button
+              <motion.button
+                whileTap={{
+                  scale: 0.9,
+                }}
                 className={`btn btn-outline-dark  ${
                   active === 0 ? `active` : ``
                 }`}
@@ -336,8 +361,11 @@ const lupon_table = (props) => {
                 }}
               >
                 Complainant / Respondent
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileTap={{
+                  scale: 0.9,
+                }}
                 className={`btn btn-outline-dark ms-1 ${
                   active === 1 ? `active` : ``
                 }`}
@@ -346,8 +374,11 @@ const lupon_table = (props) => {
                 }}
               >
                 Complain
-              </button>
-              <button
+              </motion.button>
+              <motion.button
+                whileTap={{
+                  scale: 0.9,
+                }}
                 className={`btn btn-outline-dark ms-1 ${
                   active === 2 ? `active` : ``
                 }`}
@@ -356,9 +387,12 @@ const lupon_table = (props) => {
                 }}
               >
                 Documents
-              </button>
+              </motion.button>
 
-              <button
+              <motion.button
+                whileTap={{
+                  scale: 0.9,
+                }}
                 className={`btn btn-outline-dark ms-1 ${
                   active === 3 ? `active` : ``
                 }`}
@@ -367,7 +401,7 @@ const lupon_table = (props) => {
                 }}
               >
                 Lupon Member / Action taken
-              </button>
+              </motion.button>
             </div>
           )}
           muiTableBodyCellProps={{
@@ -397,7 +431,6 @@ const lupon_table = (props) => {
             sx: {
               cursor: "pointer",
             },
-            color: "warning",
           })}
           state={{ rowSelection }}
           initialState={{
@@ -411,11 +444,15 @@ const lupon_table = (props) => {
               DateCreated: false,
               Status: false,
               _id: false,
-
+              imageofcomp: false,
               addressofcomp: false,
               addressofresp: false,
               imageofresp: false,
               Modifiedby: false,
+              compdate: false,
+              compnature: false,
+              description: false,
+              compstatus: false,
             },
           }}
           //customize built-in buttons in the top-right of top toolbar
@@ -480,14 +517,15 @@ const lupon_table = (props) => {
               <MRT_ToggleGlobalFilterButton table={table} />
               <MRT_ToggleFiltersButton table={table} />
               <MRT_ShowHideColumnsButton table={table} />
-              <IconButton
-                title="Refresh"
-                onClick={() => {
-                  handle_refresh();
-                }}
-              >
-                <RefreshIcon />
-              </IconButton>
+              <Tooltip arrow placement="right" title="Refresh">
+                <IconButton
+                  onClick={() => {
+                    handle_refresh();
+                  }}
+                >
+                  <RefreshIcon />
+                </IconButton>
+              </Tooltip>
             </Box>
           )}
         />

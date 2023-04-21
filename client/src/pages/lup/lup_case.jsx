@@ -9,11 +9,16 @@ import { useFetch } from "../../api/lupon";
 //animate
 import { motion } from "framer-motion";
 
-const lupon_complainant = (props) => {
+const lup_case = (props) => {
   const Docs_ins = async (id) => {
     try {
-      const docsData = new FormData();
+      if (props.receivedocs) {
+        if (!/jpg|png|whatever/.test(props.receivedocs.name)) {
+          throw "Please select valid document";
+        }
+      }
 
+      const docsData = new FormData();
       docsData.append("id", id);
       docsData.append("doc_file", props.receivedocs); //document complain
       const c_docs = await sendRequest("/create/docs", "POST", docsData);
@@ -129,11 +134,9 @@ const lupon_complainant = (props) => {
     if (param == "ADD") {
       reset_input();
       setCommandAction(true);
-      props.onCaseshow(false);
     } else if (param == "CANCEL") {
       reset_input();
       setCommandAction(false);
-      props.onCaseshow(true);
     } else if (param == "REFRESH") {
       reset_input();
       setCommandAction(false);
@@ -142,7 +145,6 @@ const lupon_complainant = (props) => {
     } else if (param == "EDIT") {
       setInsave("Edit");
       setCommandAction(true);
-      props.onCaseshow(false);
     }
   };
 
@@ -153,23 +155,40 @@ const lupon_complainant = (props) => {
     //setting datain datas
     const data_table = datain[0];
 
+    if (data_table) {
+      setComplainant({
+        ...complainant,
+        _id: data_table._id,
+        caseno: data_table.caseno,
+        nameofcomp: data_table.nameofcomp,
+        genderofcomp: data_table.genderofcomp,
+        addressofcomp: data_table.addressofcomp,
+        phoneofcomp: data_table.phoneofcomp,
+        imageofcomp: data_table.imageofcomp,
+        nameofresp: data_table.nameofresp,
+        genderofresp: data_table.genderofresp,
+        addressofresp: data_table.addressofresp,
+        phoneofresp: data_table.phoneofresp,
+        imageofresp: data_table.imageofresp,
+      });
+    } else {
+      setComplainant({
+        _id: "",
+        caseno: "",
+        nameofcomp: "",
+        imageofcomp: "",
+        genderofcomp: "",
+        addressofcomp: "",
+        phoneofcomp: "",
+        imageofresp: "",
+        nameofresp: "",
+        genderofresp: "",
+        addressofresp: "",
+        phoneofresp: "",
+      });
+    }
     // console.log(data_table);
     //ustate using form ustate
-    setComplainant({
-      ...complainant,
-      _id: data_table._id,
-      caseno: data_table.caseno,
-      nameofcomp: data_table.nameofcomp,
-      genderofcomp: data_table.genderofcomp,
-      addressofcomp: data_table.addressofcomp,
-      phoneofcomp: data_table.phoneofcomp,
-      imageofcomp: data_table.imageofcomp,
-      nameofresp: data_table.nameofresp,
-      genderofresp: data_table.genderofresp,
-      addressofresp: data_table.addressofresp,
-      phoneofresp: data_table.phoneofresp,
-      imageofresp: data_table.imageofresp,
-    });
   }, [datain]);
 
   //bridge data incoming to lupon page
@@ -195,18 +214,13 @@ const lupon_complainant = (props) => {
       formData.append("addressofresp", complainant.addressofresp);
       formData.append("phoneofresp", complainant.phoneofresp);
 
-      formData.append("compdate", props.PasscomplainCreator.compdate);
-      formData.append("compnature", props.PasscomplainCreator.compnature);
-      formData.append("description", props.PasscomplainCreator.description);
-      formData.append("compstatus", props.PasscomplainCreator.compstatus);
-
       try {
         const val = validate();
         if (val) throw val;
 
         const result = await sendRequest("/u/record", "POST", formData);
         //need throw err to access catch
-        console.log(result);
+
         if (props.receivedocs) {
           const promiseB = Docs_ins(result.id).then(function (result) {
             return result;
@@ -241,13 +255,6 @@ const lupon_complainant = (props) => {
       formData.append("addressofresp", complainant.addressofresp);
       formData.append("phoneofresp", complainant.phoneofresp);
 
-      // console.log(props.PasscomplainCreator); //continue tom
-      // console.log(complainant);
-      formData.append("compdate", props.PasscomplainCreator.compdate);
-      formData.append("compnature", props.PasscomplainCreator.compnature);
-      formData.append("description", props.PasscomplainCreator.description);
-      formData.append("compstatus", props.PasscomplainCreator.compstatus);
-
       try {
         const val = validate();
         if (val) throw val;
@@ -269,22 +276,13 @@ const lupon_complainant = (props) => {
       }
     }
   };
-  const [hideresp, setHideresp] = useState(false);
-  const [hidecomp, setHidecomp] = useState(false);
 
   return (
     <div className="container-fluid ">
       <div className="row justify-content-around">
         {/* complinant */}
-        <motion.div
-          whileHover={{
-            scale: !commandAction ? 1.2 : 1,
-          }}
-          onHoverStart={(e) => setHideresp(true)}
-          onHoverEnd={(e) => setHideresp(false)}
-          className="card float-left col-lg-5 shadow bg-body rounded  "
-        >
-          <div className="row mb-2 text-primary">
+        <div className="border col-lg-5 shadow bg-body">
+          <div className="row mb-2 text-muted">
             <h1>Complainant</h1>
           </div>
 
@@ -497,18 +495,11 @@ const lupon_complainant = (props) => {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Respondent */}
-        <motion.div
-          whileHover={{
-            scale: !commandAction ? 1.2 : 1,
-          }}
-          onHoverStart={(e) => setHidecomp(true)}
-          onHoverEnd={(e) => setHidecomp(false)}
-          className="card float-right col-lg-5 shadow bg-body rounded  "
-        >
-          <div className="row mb-2 text-danger ">
+        <div className="border col-lg-5 shadow bg-body">
+          <div className="row mb-2 text-muted ">
             <h1>Respondent</h1>
           </div>
 
@@ -689,10 +680,10 @@ const lupon_complainant = (props) => {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default lupon_complainant;
+export default lup_case;

@@ -23,7 +23,7 @@ exports.create_citizen = async (req, res) => {
     console.log(details);
 
     const CodeExist = await Citizen.findOne({ Code: Code });
-    if (CodeExist) throw createError(403, `Code ${Code} already registered!`);
+    if (CodeExist) throw createError(403, `Code ${Code} already saved!`);
 
     const newCitizen = new Citizen(details);
     const x = await newCitizen.save(); //saving to db
@@ -62,7 +62,7 @@ exports.update_citizen = async (req, res) => {
     const _id = req.body._id;
 
     const CodeExist = await Citizen.findOne({ Code: Code, _id: { $ne: _id } });
-    if (CodeExist) throw createError(403, `Code ${Code} already registered!`);
+    if (CodeExist) throw createError(403, `Code ${Code} already saved!`);
 
     const x = await Citizen.findOne({ _id: _id });
     if (!x) throw createError(403, `Citizen not found!`);

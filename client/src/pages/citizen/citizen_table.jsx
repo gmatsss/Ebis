@@ -93,15 +93,16 @@ const citizen_table = (props) => {
         success: "Data loaded",
         error: `Error`,
       });
-      setData(result);
-
       if (result && result.error) return toast.error({ error: result.error });
+      setData(result);
     } catch (e) {
       setLoading(false);
       //console.log(e);
       setLoggeedMessage({ error: e.message });
     }
   };
+
+  console.log(data);
 
   let title = "Citizen";
   let shouldlog = useRef(true);
@@ -111,8 +112,6 @@ const citizen_table = (props) => {
       shouldlog.current = false;
       getHandler();
     }
-
-    return () => console.log("function cleaned up");
   }, []);
 
   const tableHandler = () => {
@@ -254,6 +253,8 @@ const citizen_table = (props) => {
       >
         <div>{/* code for disable material table */}</div>
         <MaterialReactTable
+          enableMultiRowSelection={false} //use radio buttons instead of checkboxes
+          enableRowSelection
           columns={columns}
           data={rows}
           title="LIST OF Citizen ACCOUNTS"

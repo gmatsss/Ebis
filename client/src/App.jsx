@@ -30,6 +30,8 @@ import Logout from "./pages/Logout";
 import citizen_page from "./pages/citizen/citizen_page";
 import lupon_page from "./pages/lupon/lupon_page";
 
+import Lupon from "./pages/lup/lupon";
+
 //api functions to prevent lossing the user data when refreshing react app
 import { getLoggedInUser } from "./api/user";
 
@@ -58,6 +60,7 @@ const App = () => {
             <Route exact path="/logout" component={Logout} />
             <Route exact path="/citizen_page" component={citizen_page} />
             <Route exact path="/lupon_page" component={lupon_page} />
+            <Route exact path="/Lupon" component={Lupon} />
           </Switch>
         </SideBar>
       );

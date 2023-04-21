@@ -42,6 +42,11 @@ const routes = [
     icon: <BiAnalyse />,
   },
   {
+    path: "/Lupon",
+    name: "Lupon v2",
+    icon: <BiAnalyse />,
+  },
+  {
     path: "/Location",
     name: "Location",
     icon: <AiTwotoneFileExclamation />,

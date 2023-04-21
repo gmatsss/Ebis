@@ -9,15 +9,40 @@ router.use(fileupload());
 const {
   create_complain,
   get_complain,
+  get_complain_one,
   update_complain,
   delete_complain,
+
+  //complainss
+  get_complains,
+  create_complains,
+  update_complains,
+  delete_complains,
+  //docs
+  get_docs,
+  create_docs,
+  delete_docs,
 } = require("../controllers/Lupon");
 const { file_upload } = require("../middleware/file_upload");
 
 router.post("/create/record", create_complain, file_upload);
 router.get("/g/record", get_complain);
+router.get("/g/one/record/:id", get_complain_one);
 router.post("/u/record", update_complain, file_upload);
 //softdelete
 router.post("/d/record", delete_complain);
+
+//complains
+router.get("/g/c/record/:id", get_complains);
+router.post("/create/c/record", create_complains);
+router.post("/u/c/record", update_complains);
+//softdelete
+router.post("/d/c/record", delete_complains);
+
+//docs
+router.post("/create/docs", create_docs);
+router.get("/g/d/record/:id", get_docs);
+//softdelete
+router.post("/d/d/record", delete_docs);
 
 module.exports = router;
