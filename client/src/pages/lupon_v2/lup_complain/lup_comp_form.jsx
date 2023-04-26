@@ -58,6 +58,7 @@ const lup_comp_form = (props) => {
     setCommandAction(true);
     setStatesave(false);
     props.onReload("add");
+    props.ondisable(true);
   };
 
   const handle_cancel = () => {
@@ -65,6 +66,7 @@ const lup_comp_form = (props) => {
     setCommandAction(false);
     reset_input();
     props.onReload("cancel");
+    props.ondisable(false);
   };
 
   //validation
@@ -98,6 +100,7 @@ const lup_comp_form = (props) => {
         setCommandAction(false);
         setChange(false);
         props.onReload("saved");
+        props.ondisable(false);
       } catch (err) {
         return toast.error(err);
       }
@@ -115,6 +118,7 @@ const lup_comp_form = (props) => {
         setCommandAction(false);
         setChange(false);
         props.onReload("saved");
+        props.ondisable(false);
         setStatesave(true);
       } catch (err) {
         return toast.error(err);
@@ -134,6 +138,7 @@ const lup_comp_form = (props) => {
     setChange(true);
     setCommandAction(true);
     props.onReload("edit");
+    props.ondisable(true);
   };
 
   props.receivedataform(onEdit);

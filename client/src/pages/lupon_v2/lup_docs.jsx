@@ -35,7 +35,10 @@ const Lup_docs = (props) => {
 
   props.receivdatadocs(Datareceived);
 
-  props.returntolupon(disablecase);
+  useEffect(() => {
+    props.returntolupon(disablecase);
+  }, [disablecase]);
+
   return (
     <div className="container-fluid">
       <div className="row">

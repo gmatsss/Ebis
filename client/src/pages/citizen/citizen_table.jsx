@@ -102,8 +102,6 @@ const citizen_table = (props) => {
     }
   };
 
-  console.log(data);
-
   let title = "Citizen";
   let shouldlog = useRef(true);
 
@@ -253,8 +251,6 @@ const citizen_table = (props) => {
       >
         <div>{/* code for disable material table */}</div>
         <MaterialReactTable
-          enableMultiRowSelection={false} //use radio buttons instead of checkboxes
-          enableRowSelection
           columns={columns}
           data={rows}
           title="LIST OF Citizen ACCOUNTS"

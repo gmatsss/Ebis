@@ -1,12 +1,14 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import React, { useMemo, useState, useRef, useEffect, useContext } from "react";
 import MaterialReactTable, {
   MRT_ToggleFiltersButton,
   MRT_ShowHideColumnsButton,
   MRT_ToggleGlobalFilterButton,
+  MRT_ToggleDensePaddingButton,
 } from "material-react-table";
 import { Box, Button, TextField, IconButton, Tooltip } from "@mui/material";
-import { Delete, Edit, Rowing } from "@mui/icons-material";
-
+import { Delete } from "@mui/icons-material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import DownloadIcon from "@mui/icons-material/Download";
 import RefreshIcon from "@mui/icons-material/Refresh";
 // popup delete
 import Notiflix from "notiflix";
@@ -14,8 +16,9 @@ import Notiflix from "notiflix";
 import { toast } from "react-toastify";
 //api
 import { useFetch } from "../../../api/lupon";
-
-const lup_comp_table = (props) => {
+import { UserContext } from "../../../UserContext";
+const Lup_docs_table = (props) => {
+  const { user } = useContext(UserContext);
   // hooks
   const { sendRequest } = useFetch();
 
@@ -27,7 +30,29 @@ const lup_comp_table = (props) => {
   // mrt disable state
   const [state, setState] = useState(true);
 
-  //get data to database
+  const viewfile = async (data) => {
+    window.open(`http://localhost:8000/docs/${data.original.docname}`);
+    // `http://docs.google.com/gview?url=http://localhost:8000/docs/${data.original.docname}`
+  };
+
+  const download = async (url, filename) => {
+    const data = await fetch(url);
+    const blob = await data.blob();
+    const objectUrl = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.setAttribute("href", objectUrl);
+    link.setAttribute("download", filename);
+    link.style.display = "none";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+  };
+
   const getHandler = async (param) => {
     setRows("");
     setData("");
@@ -35,13 +60,13 @@ const lup_comp_table = (props) => {
       //alert loading
       if (props.paramsdata) {
         const result = await sendRequest(
-          `/g/c/record/${props.paramsdata}`,
+          `/g/d/record/${props.paramsdata}`,
           "GET"
         );
         if (result && result.error) throw result.error;
         setData(result);
       } else {
-        const result = await sendRequest(`/g/c/record/${param}`, "GET");
+        const result = await sendRequest(`/g/d/record/${param}`, "GET");
         if (result && result.error) throw result.error;
         setData(result);
       }
@@ -57,10 +82,8 @@ const lup_comp_table = (props) => {
           header: "compid",
           accessorKey: "compid",
         },
-        { header: "Complain date", accessorKey: "compdate" },
-        { header: "Complain nature", accessorKey: "compnature" },
-        { header: "Complain status", accessorKey: "compstatus" },
-        { header: "Description", accessorKey: "description" },
+        { header: "Document name", accessorKey: "docname" },
+
         {
           header: "DateCreated",
           accessorKey: "DateCreated",
@@ -85,6 +108,44 @@ const lup_comp_table = (props) => {
         },
         { header: "Status", accessorKey: "Status", enableEditing: false },
         { header: "_id", accessorKey: "_id", enableEditing: false },
+        {
+          header: "",
+          Cell: ({ row }) => (
+            <Tooltip arrow placement="left" title="View">
+              <VisibilityIcon color="info" onClick={() => viewfile(row)} />
+            </Tooltip>
+          ),
+          size: 10, //small column
+          accessorKey: "View ",
+        },
+        {
+          header: "",
+          Cell: ({ row }) => (
+            <Tooltip arrow placement="bottom" title="Download">
+              <DownloadIcon
+                color="success"
+                onClick={() =>
+                  download(
+                    `http://localhost:8000/docs/${row.original.docname}`,
+                    row.original.docname
+                  )
+                }
+              />
+            </Tooltip>
+          ),
+          size: 10, //small column
+          accessorKey: "Download ",
+        },
+        {
+          header: "",
+          Cell: ({ row }) => (
+            <Tooltip arrow placement="right" title="Delete">
+              <Delete color="error" onClick={() => handleDeleteRow(row)} />
+            </Tooltip>
+          ),
+          size: 10, //small column
+          accessorKey: "Delete",
+        },
       ];
 
       //insert data to table
@@ -92,10 +153,7 @@ const lup_comp_table = (props) => {
       data.forEach((x) => {
         row.push({
           compid: x.compid,
-          compdate: x.compdate,
-          compnature: x.compnature,
-          description: x.description,
-          compstatus: x.compstatus,
+          docname: x.docname,
 
           DateCreated: x.DateCreated,
           Createdby: x.Createdby,
@@ -113,6 +171,31 @@ const lup_comp_table = (props) => {
     }
   };
 
+  const handleDeleteRow = (data) => {
+    Notiflix.Confirm.show(
+      "Delete ",
+      `Delete this Document ${data.original.docname}?`,
+      "Yes",
+      "No",
+      async function okCb() {
+        const formData = new FormData();
+        formData.append("_id", data.original.id);
+        formData.append("Modifiedby", user);
+        const result = await sendRequest("/d/d/record", "POST", formData);
+        if (result.error) toast.error(result.error);
+        getHandler(data.original.compid);
+      },
+      function cancelCb() {
+        return;
+      },
+      {
+        width: "320px",
+        borderRadius: "8px",
+        // etc...
+      }
+    );
+  };
+
   useEffect(() => {
     if (!data || data.length === 0) return;
 
@@ -128,54 +211,7 @@ const lup_comp_table = (props) => {
     getHandler();
   }, [props.paramsdata]);
 
-  const [param, setParam] = useState();
-  const onCountReceived = (param) => {
-    setParam(param);
-    if (param == "refresh") {
-      getHandler();
-      setState(true);
-    } else if (param == "add") {
-      setState(false);
-    } else if (param == "cancel") {
-      setState(true);
-    } else if (param == "saved") {
-      getHandler();
-      setState(true);
-    } else if (param == "edit") {
-      setState(false);
-    }
-  };
-
-  const handle_edit = (data) => {
-    props.onform(data);
-  };
-
-  const handleDeleteRow = (data) => {
-    // console.log(data._id);
-    Notiflix.Confirm.show(
-      "Delete ",
-      `Delete this Complain ${data.compnature}?`,
-      "Yes",
-      "No",
-      async function okCb() {
-        const formData = new FormData();
-        formData.append("_id", data.id);
-        const result = await sendRequest("/d/c/record", "POST", formData);
-        if (result.error) toast.error(result.error);
-        getHandler(data.compid);
-      },
-      function cancelCb() {
-        return;
-      },
-      {
-        width: "320px",
-        borderRadius: "8px",
-        // etc...
-      }
-    );
-  };
-
-  props.statecrud(onCountReceived);
+  props.receivereload(getHandler);
 
   return (
     <MaterialReactTable
@@ -190,20 +226,6 @@ const lup_comp_table = (props) => {
       data={rows}
       state={{ showProgressBars: data ? false : true }}
       positionToolbarAlertBanner="none"
-      enableRowActions
-      renderRowActions={({ row }) => (
-        <Box>
-          <IconButton onClick={() => handle_edit(row.original)}>
-            <Edit />
-          </IconButton>
-          <IconButton
-            color="error"
-            onClick={() => handleDeleteRow(row.original)}
-          >
-            <Delete />
-          </IconButton>
-        </Box>
-      )}
       initialState={{
         pagination: {
           pageSize: 5,
@@ -211,11 +233,11 @@ const lup_comp_table = (props) => {
         },
         density: "compact",
         columnVisibility: {
-          compid: false,
-          Createdby: false,
-          DateCreated: false,
+          Modifiedby: false,
+          DateModified: false,
           Status: false,
           _id: false,
+          compid: false,
         },
       }}
       renderToolbarInternalActions={({ table }) => (
@@ -226,6 +248,7 @@ const lup_comp_table = (props) => {
           <MRT_ToggleGlobalFilterButton table={table} />
           <MRT_ToggleFiltersButton table={table} />
           <MRT_ShowHideColumnsButton table={table} />
+          <MRT_ToggleDensePaddingButton table={table} />
           <Tooltip arrow placement="right" title="Refresh">
             <IconButton
               onClick={() => {
@@ -241,4 +264,4 @@ const lup_comp_table = (props) => {
   );
 };
 
-export default lup_comp_table;
+export default Lup_docs_table;

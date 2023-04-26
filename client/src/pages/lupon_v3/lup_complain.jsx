@@ -4,10 +4,12 @@ import Lup_comp_form from "./lup_complain/lup_comp_form";
 
 const lup_comp = (props) => {
   const [disablecase, setDisablecase] = useState();
+  const [showmodal, setShowmodal] = useState();
   //page instruc
   let Passdatainstruc = (datainfo) => {};
   const Instruc = (datain) => {
     setDisablecase(datain);
+
     Passdatainstruc && Passdatainstruc(datain);
   };
   const Passdatainstruct = (handler) => {
@@ -40,23 +42,35 @@ const lup_comp = (props) => {
   props.receivdatacomp(Datareceived);
   //back to lupon compnent
 
-  props.d_tablecase(disablecase);
+  useEffect(() => {
+    props.d_tablecase(disablecase);
+  }, [disablecase]);
 
+  const Instructoshow = (datain) => {
+    Passdatainstrucshow && Passdatainstrucshow(datain);
+  };
+  let Passdatainstrucshow = (datainfo) => {};
+  const Redatainstruct = (handler) => {
+    Passdatainstrucshow = handler;
+  };
   return (
     <div className="container-fluid">
       <div className="row">
-        <div className="col-lg-9 ">
+        <div className="col-lg-12 ">
           <Lup_comp_table
             paramsdata={dataparams} //caseid
             statecrud={Passdatainstruct}
             onform={onformdata}
+            onshowmodal={Instructoshow}
           />
         </div>
-        <div className="col-lg-3 mt-2">
+        <div className="">
           <Lup_comp_form
             paramscasedata={dataparams} //caseid
             onReload={Instruc}
             receivedataform={Passdatatoformfunc}
+            ondisable={Instruc}
+            receivemodal={Redatainstruct}
           />
         </div>
       </div>

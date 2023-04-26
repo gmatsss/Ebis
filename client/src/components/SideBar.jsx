@@ -20,6 +20,7 @@ import { BsCartCheck } from "react-icons/bs";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import SidebarMenu from "./SidebarMenu";
+import GroupsIcon from "@mui/icons-material/Groups";
 const routes = [
   {
     path: "/",
@@ -37,13 +38,23 @@ const routes = [
     icon: <BsFileEarmarkPerson />,
   },
   {
+    path: "/member_list",
+    name: "Members",
+    icon: <GroupsIcon />,
+  },
+  {
     path: "/lupon_page",
     name: "Lupon",
     icon: <BiAnalyse />,
   },
   {
-    path: "/Lupon",
+    path: "/Lupon_v2",
     name: "Lupon v2",
+    icon: <BiAnalyse />,
+  },
+  {
+    path: "/Lupon_v3",
+    name: "Lupon v3",
     icon: <BiAnalyse />,
   },
   {

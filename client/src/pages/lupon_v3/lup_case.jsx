@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { TextField, InputLabel, FormControl } from "@mui/material";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -9,27 +9,10 @@ import { useFetch } from "../../api/lupon";
 //animate
 import { motion } from "framer-motion";
 
+import { UserContext } from "../../UserContext";
+
 const lup_case = (props) => {
-  const Docs_ins = async (id) => {
-    try {
-      if (props.receivedocs) {
-        if (!/jpg|png|whatever/.test(props.receivedocs.name)) {
-          throw "Please select valid document";
-        }
-      }
-
-      const docsData = new FormData();
-      docsData.append("id", id);
-      docsData.append("doc_file", props.receivedocs); //document complain
-      const c_docs = await sendRequest("/create/docs", "POST", docsData);
-      if (c_docs.error) throw c_docs.error;
-
-      return c_docs.success;
-    } catch (e) {
-      return e; //error message
-    }
-  };
-
+  const { user } = useContext(UserContext);
   const { sendRequest } = useFetch();
 
   //instructions
@@ -93,14 +76,34 @@ const lup_case = (props) => {
     setDatain(datain);
   };
 
+  //preview image
+  const [previmg_comp, setPrevimg_comp] = useState();
+  const [previmg_resp, setPrevimg_resp] = useState();
+
   //file upload
-  const changeHandler = (event) => {
-    setSelectedFile(event.target.files[0]);
+  const changeHandler = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      if (!/jpg|png|whatever/.test(e.target.files[0].name)) {
+        return toast.warning("Please select valid image file for complainant");
+      } else {
+        setSelectedFile(e.target.files[0]);
+        setPrevimg_comp(URL.createObjectURL(e.target.files[0]));
+      }
+    }
+
     //setIsSelected(true);
   };
 
-  const changeHandler2 = (event) => {
-    setSelectedFile2(event.target.files[0]);
+  const changeHandler2 = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      if (!/jpg|png|whatever/.test(e.target.files[0].name)) {
+        return toast.warning("Please select valid image file for respondent");
+      } else {
+        setSelectedFile2(e.target.files[0]);
+        setPrevimg_resp(URL.createObjectURL(e.target.files[0]));
+      }
+    }
+
     //setIsSelected(true);
   };
 
@@ -123,6 +126,8 @@ const lup_case = (props) => {
     setSelectedFile("");
     setSelectedFile2("");
     setInsave("");
+    setPrevimg_comp("");
+    setPrevimg_resp("");
   };
 
   const [insave, setInsave] = useState("");
@@ -135,8 +140,13 @@ const lup_case = (props) => {
       reset_input();
       setCommandAction(true);
     } else if (param == "CANCEL") {
-      reset_input();
-      setCommandAction(false);
+      if (insave === "Edit") {
+        setCommandAction(false);
+        setPrevimg_comp("");
+      } else {
+        reset_input();
+        setCommandAction(false);
+      }
     } else if (param == "REFRESH") {
       reset_input();
       setCommandAction(false);
@@ -171,21 +181,6 @@ const lup_case = (props) => {
         phoneofresp: data_table.phoneofresp,
         imageofresp: data_table.imageofresp,
       });
-    } else {
-      setComplainant({
-        _id: "",
-        caseno: "",
-        nameofcomp: "",
-        imageofcomp: "",
-        genderofcomp: "",
-        addressofcomp: "",
-        phoneofcomp: "",
-        imageofresp: "",
-        nameofresp: "",
-        genderofresp: "",
-        addressofresp: "",
-        phoneofresp: "",
-      });
     }
     // console.log(data_table);
     //ustate using form ustate
@@ -196,24 +191,26 @@ const lup_case = (props) => {
   props.receiverCreator(onCountReceived);
 
   const handle_saved = async () => {
+    const formData = new FormData();
+
+    formData.append("_id", complainant._id);
+    formData.append("file", selectedFile);
+    formData.append("file2", selectedFile2);
+
+    formData.append("caseno", complainant.caseno);
+    formData.append("nameofcomp", complainant.nameofcomp);
+    formData.append("genderofcomp", complainant.genderofcomp);
+    formData.append("addressofcomp", complainant.addressofcomp);
+    formData.append("phoneofcomp", complainant.phoneofcomp);
+
+    formData.append("nameofresp", complainant.nameofresp);
+    formData.append("genderofresp", complainant.genderofresp);
+    formData.append("addressofresp", complainant.addressofresp);
+    formData.append("phoneofresp", complainant.phoneofresp);
+    formData.append("Createdby", user);
+    formData.append("Modifiedby", user);
+
     if (insave == "Edit") {
-      const formData = new FormData();
-
-      formData.append("_id", complainant._id);
-      formData.append("file", selectedFile);
-      formData.append("file2", selectedFile2);
-
-      formData.append("caseno", complainant.caseno);
-      formData.append("nameofcomp", complainant.nameofcomp);
-      formData.append("genderofcomp", complainant.genderofcomp);
-      formData.append("addressofcomp", complainant.addressofcomp);
-      formData.append("phoneofcomp", complainant.phoneofcomp);
-
-      formData.append("nameofresp", complainant.nameofresp);
-      formData.append("genderofresp", complainant.genderofresp);
-      formData.append("addressofresp", complainant.addressofresp);
-      formData.append("phoneofresp", complainant.phoneofresp);
-
       try {
         const val = validate();
         if (val) throw val;
@@ -221,50 +218,23 @@ const lup_case = (props) => {
         const result = await sendRequest("/u/record", "POST", formData);
         //need throw err to access catch
 
-        if (props.receivedocs) {
-          const promiseB = Docs_ins(result.id).then(function (result) {
-            return result;
-          });
-
-          promiseB.then((res) => console.log(res));
-        }
-
         if (result.error) throw result.error;
         toast.success("Successfully Updated Record");
-        reset_input();
         setCommandAction(false);
-        props.onCaseshow(true);
-        props.onReload(true);
+        await props.onReload(true);
+        setInsave("");
+        setPrevimg_comp("");
+        setPrevimg_resp("");
       } catch (err) {
         return toast.error(err);
       }
     } else {
-      const formData = new FormData();
-
-      formData.append("file", selectedFile);
-      formData.append("file2", selectedFile2);
-
-      formData.append("caseno", complainant.caseno);
-      formData.append("nameofcomp", complainant.nameofcomp);
-      formData.append("genderofcomp", complainant.genderofcomp);
-      formData.append("addressofcomp", complainant.addressofcomp);
-      formData.append("phoneofcomp", complainant.phoneofcomp);
-
-      formData.append("nameofresp", complainant.nameofresp);
-      formData.append("genderofresp", complainant.genderofresp);
-      formData.append("addressofresp", complainant.addressofresp);
-      formData.append("phoneofresp", complainant.phoneofresp);
-
       try {
         const val = validate();
         if (val) throw val;
 
         const result = await sendRequest("/create/record", "POST", formData);
-
-        Docs_ins(result.id);
-        //need throw err to access catch
         if (result.error) throw result.error;
-
         toast.success(result.success);
         reset_input();
         setCommandAction(false);
@@ -279,62 +249,92 @@ const lup_case = (props) => {
 
   return (
     <div className="container-fluid ">
-      <div className="row justify-content-around">
+      <div className="row ">
         {/* complinant */}
-        <div className="border col-lg-5 shadow bg-body">
-          <div className="row mb-2 text-muted">
+        <div className=" col-lg-6 ">
+          <div className="row mb-1 text-muted ">
             <h1>Complainant</h1>
           </div>
 
-          <div className="row">
+          <div className="row  justify-content-around ">
             {/* img */}
-            <div className="col-sm-6 col-lg-7 col-xl-6 mb-3 ">
-              <div className="card ">
+            <div className="col-sm-6 col-lg-6 col-xl-5  ">
+              <div className=" card ">
                 <img
                   className="card-img-top "
-                  src={`/img/${
-                    !complainant.imageofcomp
-                      ? "default.jpg"
-                      : complainant.imageofcomp
-                  }`}
+                  src={
+                    previmg_comp
+                      ? previmg_comp
+                      : `/img/${
+                          !complainant.imageofcomp
+                            ? "default.jpg"
+                            : complainant.imageofcomp
+                        }`
+                  }
                   alt="Card image"
                   height="150"
-                  style={{ maxWidth: "100%", height: "260px" }}
-                />
-              </div>
-              <div className="input-file-container">
-                <input
-                  disabled={!commandAction ? "disabled" : ""}
-                  className="input-file"
-                  type="file"
-                  name="file"
-                  onChange={changeHandler}
-                />
-                <motion.label
-                  animate={{
-                    opacity: !commandAction ? 0 : 1,
-                    display: !commandAction ? "none" : "",
-                  }}
-                  transition={{
-                    duration: 1,
-                  }}
-                  tabIndex="0"
-                  For="my-file"
-                  className="input-file-trigger"
                   style={{
-                    textAlign: "center",
+                    maxWidth: "100%",
+                    height: "260px",
+                    objectFit: "fill",
+                  }}
+                />
+                <div
+                  style={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "260px",
                   }}
                 >
-                  {!selectedFile
-                    ? !complainant.imageofcomp
-                      ? "Please select image"
-                      : complainant.imageofcomp
-                    : selectedFile.name}
-                </motion.label>
+                  <input
+                    disabled={!commandAction ? "disabled" : ""}
+                    className="input-file"
+                    type="file"
+                    name="file"
+                    onChange={changeHandler}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: "#FF2222",
+                    }}
+                  />
+                  <motion.label
+                    animate={{
+                      opacity: commandAction
+                        ? complainant.imageofcomp
+                          ? "0.5"
+                          : selectedFile
+                          ? "0.5"
+                          : "1"
+                        : "0",
+                      pointerEvents: commandAction ? "none" : "auto",
+                    }}
+                    transition={{
+                      duration: 1,
+                    }}
+                    tabIndex="0"
+                    For="my-file"
+                    style={{
+                      textAlign: "center",
+                      backgroundColor: "#E6E6E6",
+                      height: "100%",
+                    }}
+                  >
+                    <p className="mt-5">
+                      Only accept file extenion are jpg,png,jpeg,bmp, you can
+                      drag and drop your file here or
+                    </p>
+                    {!selectedFile
+                      ? !complainant.imageofcomp
+                        ? "Please select image"
+                        : complainant.imageofcomp
+                      : selectedFile.name}
+                  </motion.label>
+                </div>
               </div>
             </div>
             {/* inputs */}
-            <div className="col-sm-6 col-lg-5 col-xl-6">
+            <div className="col-sm-6 col-lg-6 col-xl-6 ">
               <div className="row">
                 <div className="col-12">
                   <TextField
@@ -367,7 +367,9 @@ const lup_case = (props) => {
                   <TextField
                     variant="standard"
                     type="text"
-                    className="form-control my-2"
+                    className={
+                      commandAction ? "form-control my-1" : "form-control my-2"
+                    }
                     label="Name of complainant"
                     name="Name"
                     placeholder="Name"
@@ -445,10 +447,16 @@ const lup_case = (props) => {
                   <TextField
                     variant="standard"
                     type="text"
-                    className="form-control my-2"
+                    className={
+                      commandAction ? "form-control my-1" : "form-control my-2"
+                    }
                     label="Address"
-                    name="Name"
-                    placeholder="Name"
+                    name="Address"
+                    placeholder="Address"
+                    multiline
+                    sx={{
+                      "& .MuiTextField-root": { m: 1, width: "25ch" },
+                    }}
                     value={complainant.addressofcomp}
                     onChange={(e) =>
                       setComplainant({
@@ -473,10 +481,12 @@ const lup_case = (props) => {
                   <TextField
                     variant="standard"
                     type="number"
-                    className="form-control my-2"
+                    className={
+                      commandAction ? "form-control my-1" : "form-control my-2"
+                    }
                     label="Phone Number"
-                    name="Name"
-                    placeholder="Name"
+                    name="Number"
+                    placeholder="Number"
                     value={complainant.phoneofcomp}
                     onChange={(e) =>
                       setComplainant({
@@ -498,60 +508,86 @@ const lup_case = (props) => {
         </div>
 
         {/* Respondent */}
-        <div className="border col-lg-5 shadow bg-body">
-          <div className="row mb-2 text-muted ">
+        <div className=" col-lg-6 ">
+          <div className="row mb-1 text-muted ">
             <h1>Respondent</h1>
           </div>
 
-          <div className="row">
+          <div className="row justify-content-around">
             {/* img */}
-            <div className="col-sm-6 col-lg-7 col-xl-6 mb-2 ">
+            <div className="col-sm-6 col-lg-6 col-xl-5 ">
               <div className="card ">
                 <img
                   className="card-img-top "
-                  src={`/img/${
-                    !complainant.imageofresp
-                      ? "default.jpg"
-                      : complainant.imageofresp
-                  }`}
+                  src={
+                    previmg_resp
+                      ? previmg_resp
+                      : `/img/${
+                          !complainant.imageofresp
+                            ? "default.jpg"
+                            : complainant.imageofresp
+                        }`
+                  }
                   alt="Card image"
                   height="150"
                   style={{ maxWidth: "100%", height: "260px" }}
                 />
-              </div>
-              <div className="input-file-container">
-                <input
-                  disabled={!commandAction ? "disabled" : ""}
-                  className="input-file"
-                  type="file"
-                  name="file"
-                  onChange={changeHandler2}
-                />
-                <motion.label
-                  animate={{
-                    opacity: !commandAction ? 0 : 1,
-                    display: !commandAction ? "none" : "",
-                  }}
-                  transition={{
-                    duration: 1,
-                  }}
-                  tabIndex="0"
-                  For="my-file"
-                  className="input-file-trigger"
+                <div
                   style={{
-                    textAlign: "center",
+                    position: "absolute",
+                    width: "100%",
+                    height: "260px",
                   }}
                 >
-                  {!selectedFile2
-                    ? !complainant.imageofresp
-                      ? "Please select image"
-                      : complainant.imageofresp
-                    : selectedFile2.name}
-                </motion.label>
+                  <input
+                    disabled={!commandAction ? "disabled" : ""}
+                    className="input-file"
+                    type="file"
+                    name="file"
+                    onChange={changeHandler2}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: "#FF2222",
+                    }}
+                  />
+                  <motion.label
+                    animate={{
+                      opacity: commandAction
+                        ? complainant.imageofresp
+                          ? "0.5"
+                          : selectedFile2
+                          ? "0.5"
+                          : "1"
+                        : "0",
+                      pointerEvents: commandAction ? "none" : "auto",
+                    }}
+                    transition={{
+                      duration: 1,
+                    }}
+                    tabIndex="0"
+                    For="my-file"
+                    style={{
+                      textAlign: "center",
+                      backgroundColor: "#E6E6E6",
+                      height: "100%",
+                    }}
+                  >
+                    <p className="mt-5">
+                      Only accept file extenion are jpg,png,jpeg,bmp, you can
+                      drag and drop your file here or
+                    </p>
+                    {!selectedFile2
+                      ? !complainant.imageofresp
+                        ? "Please select image"
+                        : complainant.imageofresp
+                      : selectedFile2.name}
+                  </motion.label>
+                </div>
               </div>
             </div>
             {/* inputs */}
-            <div className="col-sm-6 col-lg-5 col-xl-6">
+            <div className="col-sm-6 col-lg-6 col-xl-6">
               <div className="row">
                 <div className="col-12 text-end">
                   <TextField
@@ -636,6 +672,7 @@ const lup_case = (props) => {
                     type="text"
                     className="form-control my-2"
                     label="Address"
+                    multiline
                     value={complainant.addressofresp}
                     onChange={(e) =>
                       setComplainant({

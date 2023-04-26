@@ -12,6 +12,7 @@ import Lup_table from "./lup_table";
 import Lup_case from "./lup_case";
 import Lup_complain from "./lup_complain";
 import Lup_docs from "./lup_docs";
+import Lup_mem_act from "./Lup_mem_act";
 
 const Lupon = (props) => {
   const [basicActive, setBasicActive] = useState("tab1");
@@ -122,16 +123,20 @@ const Lupon = (props) => {
     setHandle_docs(docs);
   };
 
+  const [distab, setDistab] = useState(false);
+
   //instruct to disbale case table complian
   const [disablecase, setDisablecase] = useState();
   const ondisable = (parms) => {
     setDisablecase(parms);
+    setDistab(parms);
   };
 
   //instruct to disbale case table docs
   const [disablecasedocs, setDisablecasedocs] = useState();
   const ondisabledocs = (parms) => {
     setDisablecasedocs(parms);
+    setDistab(parms);
   };
 
   return (
@@ -156,7 +161,10 @@ const Lupon = (props) => {
       </div>
 
       <div className="row mt-2">
-        <MDBTabs className="mb-3">
+        <MDBTabs
+          className="mb-3"
+          style={{ pointerEvents: distab ? "none" : "auto" }}
+        >
           <MDBTabsItem>
             <MDBTabsLink
               onClick={() => handleBasicClick("tab1")}
@@ -186,7 +194,7 @@ const Lupon = (props) => {
               onClick={() => handleBasicClick("tab4")}
               active={basicActive === "tab4"}
             >
-              Actions
+              Lupon Member/Action Taken
             </MDBTabsLink>
           </MDBTabsItem>
         </MDBTabs>
@@ -214,7 +222,9 @@ const Lupon = (props) => {
               returntolupon={ondisabledocs}
             />
           </MDBTabsPane>
-          <MDBTabsPane show={basicActive === "tab4"}>Tab 4 content</MDBTabsPane>
+          <MDBTabsPane show={basicActive === "tab4"} className="bg-white">
+            <Lup_mem_act />
+          </MDBTabsPane>
         </MDBTabsContent>
       </div>
     </div>

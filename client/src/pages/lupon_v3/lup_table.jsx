@@ -1,8 +1,9 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import React, { useContext, useState, useRef, useEffect } from "react";
 import MaterialReactTable, {
   MRT_ToggleFiltersButton,
   MRT_ShowHideColumnsButton,
   MRT_ToggleGlobalFilterButton,
+  MRT_ToggleDensePaddingButton,
 } from "material-react-table";
 import { Box, Button, TextField, IconButton, Tooltip } from "@mui/material";
 import { Delete, Edit, Rowing } from "@mui/icons-material";
@@ -14,7 +15,10 @@ import Notiflix from "notiflix";
 import { toast } from "react-toastify";
 //api
 import { useFetch } from "../../api/lupon";
+
+import { UserContext } from "../../UserContext";
 const Lup_table = (props) => {
+  const { user } = useContext(UserContext);
   // hooks
   const { sendRequest } = useFetch();
 
@@ -24,7 +28,30 @@ const Lup_table = (props) => {
   const [data, setData] = useState();
 
   //get data to database
+
+  const handle_refresh = () => {
+    props.onStateform("REFRESH");
+    setData("");
+    setRowSelection("");
+    setRowid("");
+    setState(true);
+    setChange(false);
+    props.onPassdata("");
+    props.onPassdata_2("");
+    getHandler();
+  };
+
   const getHandler = async () => {
+    // props.onStateform("REFRESH");
+
+    setData("");
+    // setRowSelection("");
+    // setRowid("");
+    setState(true);
+    setChange(false);
+    // props.onPassdata("");
+    // props.onPassdata_2("");
+
     try {
       //alert loading
       const result = await toast.promise(sendRequest("/g/record", "GET"), {
@@ -79,26 +106,7 @@ const Lup_table = (props) => {
           accessorKey: "imageofresp",
           enableEditing: false,
         },
-        {
-          header: "compdate",
-          accessorKey: "compdate",
-          enableEditing: false,
-        },
-        {
-          header: "compnature",
-          accessorKey: "compnature",
-          enableEditing: false,
-        },
-        {
-          header: "description",
-          accessorKey: "description",
-          enableEditing: false,
-        },
-        {
-          header: "compstatus",
-          accessorKey: "compstatus",
-          enableEditing: false,
-        },
+
         {
           header: "DateCreated",
           accessorKey: "DateCreated",
@@ -142,11 +150,6 @@ const Lup_table = (props) => {
           phoneofresp: x.phoneofresp,
           imageofresp: x.imageofresp,
 
-          compdate: x.compdate,
-          compnature: x.compnature,
-          description: x.description,
-          compstatus: x.compstatus,
-
           DateCreated: x.DateCreated,
           Createdby: x.Createdby,
           DateModified: x.DateModified,
@@ -165,6 +168,7 @@ const Lup_table = (props) => {
 
   useEffect(() => {
     if (!data || data.length === 0) return;
+
     tableHandler();
   }, [data]);
 
@@ -194,28 +198,13 @@ const Lup_table = (props) => {
     props.onStateform("CANCEL");
     setState(true);
     setChange(false);
-    setRowSelection("");
-    setRowid("");
-    props.onPassdata("");
+    // setRowSelection("");
+    // setRowid("");
+    //  props.onPassdata("");
   };
 
   const handle_save = () => {
     props.onStateform("SAVED");
-  };
-
-  //refresh code
-  const handle_refresh = () => {
-    props.onStateform("REFRESH");
-    setData("");
-    setColumns("");
-    setRows("");
-    getHandler();
-    setRowSelection("");
-    setRowid("");
-    setState(true);
-    setChange(false);
-    props.onPassdata("");
-    props.onPassdata_2("");
   };
 
   //edit
@@ -235,8 +224,10 @@ const Lup_table = (props) => {
       async function okCb() {
         const formData = new FormData();
         formData.append("_id", data._id);
+        formData.append("Modifiedby", user);
         const result = await sendRequest("/d/record", "POST", formData);
-        if (result.error) toast.error(result.error);
+        if (result.error) return toast.error(result.error);
+        toast.success(result.success);
         handle_refresh();
       },
       function cancelCb() {
@@ -250,7 +241,15 @@ const Lup_table = (props) => {
     );
   };
 
-  props.PassreloadCreator(handle_refresh);
+  props.PassreloadCreator(getHandler);
+
+  useEffect(() => {
+    let datapass;
+    for (name in rowSelection) {
+      datapass = name;
+    }
+    getdata(datapass);
+  }, [rowSelection, data]);
 
   const getdata = async (newdata) => {
     if (newdata) {
@@ -260,33 +259,21 @@ const Lup_table = (props) => {
     }
   };
 
-  useEffect(() => {
-    let datapass;
-    for (name in rowSelection) {
-      datapass = name;
-    }
-    getdata(datapass);
-  }, [rowSelection]);
-
   const [statecomp, setStatecomp] = useState(true);
 
   useEffect(() => {
     const params = props.disablefromcomp;
-    console.log(params);
-    if (params === "add") {
+
+    if (params === true) {
       setStatecomp(false);
-    } else if (params === "edit") {
-      setStatecomp(false);
-    } else if (params === "cancel") {
-      setStatecomp(true);
-    } else if (params === "saved") {
+    } else if (params === false) {
       setStatecomp(true);
     }
   }, [props.disablefromcomp]);
 
   useEffect(() => {
     const params = props.disablefromdocs;
-    console.log(params);
+
     if (params === true) {
       setStatecomp(false);
     } else if (params === false) {
@@ -297,58 +284,57 @@ const Lup_table = (props) => {
   return (
     <div
       style={{
-        opacity: statecomp ? "1" : "0.3",
+        opacity: statecomp ? "1" : "0.4",
         pointerEvents: statecomp ? "auto" : "none",
       }}
     >
+      <div className="mb-2">
+        {!change ? (
+          <Button_lex
+            variant="primary"
+            title="Add"
+            size="lg"
+            onClick={handle_add}
+          >
+            {/* <AddIcon /> */}
+            Create
+          </Button_lex>
+        ) : (
+          <Button_lex
+            variant="success"
+            className="btn-component"
+            title="Save"
+            size="lg"
+            onClick={handle_save}
+          >
+            <span className="d-flex justify-content-around">
+              {/* <SaveIcon /> */}
+              Save
+            </span>
+          </Button_lex>
+        )}
+
+        {!change ? (
+          <div></div>
+        ) : (
+          <Button_lex
+            variant="danger"
+            className="btn-component ms-1"
+            title="Add"
+            size="lg"
+            onClick={handle_cancel}
+          >
+            <span className="d-flex justify-content-around">
+              {/* <CancelIcon /> */}
+              Cancel
+            </span>
+          </Button_lex>
+        )}
+      </div>
+
       <MaterialReactTable
         columns={columns}
         data={rows}
-        renderTopToolbarCustomActions={({ table }) => (
-          <div>
-            {!change ? (
-              <Button_lex
-                variant="primary"
-                title="Add"
-                size="lg"
-                onClick={handle_add}
-              >
-                {/* <AddIcon /> */}
-                Create
-              </Button_lex>
-            ) : (
-              <Button_lex
-                variant="success"
-                className="btn-component"
-                title="Save"
-                size="lg"
-                onClick={handle_save}
-              >
-                <span className="d-flex justify-content-around">
-                  {/* <SaveIcon /> */}
-                  Save
-                </span>
-              </Button_lex>
-            )}
-
-            {!change ? (
-              <div></div>
-            ) : (
-              <Button_lex
-                variant="danger"
-                className="btn-component ms-1"
-                title="Add"
-                size="lg"
-                onClick={handle_cancel}
-              >
-                <span className="d-flex justify-content-around">
-                  {/* <CancelIcon /> */}
-                  Cancel
-                </span>
-              </Button_lex>
-            )}
-          </div>
-        )}
         getRowId={(row) => row._id}
         enableMultiRowSelection={false} //use radio buttons instead of checkboxes
         enableRowSelection
@@ -356,8 +342,8 @@ const Lup_table = (props) => {
           //implement row selection click events manually
           //getting the data id
           onClick: () => {
-            setRowSelection((prev) => ({
-              [row.id]: !prev[row.id],
+            setRowSelection(() => ({
+              [row.id]: [row.id],
             }));
           },
 
@@ -366,19 +352,19 @@ const Lup_table = (props) => {
           },
         })}
         onRowSelectionChange={setRowSelection} //connect internal row selection state to your own
-        state={{ rowSelection }} //pass our managed row selection state to the table to use
+        state={{ rowSelection, showSkeletons: data ? false : true }} //pass our managed row selection state to the table to use
         positionToolbarAlertBanner="none"
-        // muiTablePaperProps={{
-        //   //table style
-        //   sx: {
-        //     pointerEvents: statecomp ? "auto" : "none",
-        //     opacity: statecomp ? "1" : "0.2",
-        //   },
-        // }}
+        muiTablePaperProps={{
+          //table style
+          sx: {
+            pointerEvents: state ? (statecomp ? "auto" : "none") : "none",
+            opacity: state ? (statecomp ? "1" : "0.5") : "0.5",
+          },
+        }}
         muiTableBodyCellProps={{
           sx: {
             pointerEvents: state ? (statecomp ? "auto" : "none") : "none",
-            opacity: state ? (statecomp ? "1" : "0.2") : "0.2",
+            opacity: state ? (statecomp ? "1" : "0.5") : "0.5",
           },
         }}
         enableRowActions
@@ -406,14 +392,9 @@ const Lup_table = (props) => {
             Status: false,
             _id: false,
             imageofcomp: false,
-            addressofcomp: false,
-            addressofresp: false,
+
             imageofresp: false,
-            Modifiedby: false,
-            compdate: false,
-            compnature: false,
-            description: false,
-            compstatus: false,
+
             phoneofcomp: false,
             phoneofresp: false,
           },
@@ -436,7 +417,8 @@ const Lup_table = (props) => {
             {/* along-side built-in buttons in whatever order you want them */}
             <MRT_ToggleGlobalFilterButton table={table} />
             <MRT_ToggleFiltersButton table={table} />
-            {/* <MRT_ShowHideColumnsButton table={table} /> */}
+            <MRT_ShowHideColumnsButton table={table} />
+            <MRT_ToggleDensePaddingButton table={table} />
             <Tooltip arrow placement="right" title="Refresh">
               <IconButton
                 onClick={() => {

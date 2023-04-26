@@ -66,6 +66,10 @@ app.use("/api", citizenRoutes);
 const luponRoutes = require("./routes/Lupon");
 app.use("/lupon", luponRoutes);
 
+//member routes start
+const memberRoutes = require("./routes/Member");
+app.use("/member", memberRoutes);
+
 //port
 const port = process.env.PORT || 8001;
 

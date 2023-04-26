@@ -26,8 +26,8 @@ exports.create_complain = async (req, res, next) => {
     const description = req.body.description;
     const compstatus = req.body.compstatus;
 
-    // // const Createdby = req.body.Createdby;
-    // // const Modifiedby = req.body.Modifiedby;
+    const Createdby = req.body.Createdby;
+    const Modifiedby = req.body.Modifiedby;
 
     const details = {
       caseno: caseno,
@@ -47,9 +47,9 @@ exports.create_complain = async (req, res, next) => {
       description: description,
       compstatus: compstatus,
       DateCreated: DATE.dateWithTime(),
-      Createdby: "sample",
+      Createdby: Createdby,
       DateModified: DATE.dateWithTime(),
-      Modifiedby: "sample",
+      Modifiedby: Modifiedby,
       Status: 1,
     };
 
@@ -119,7 +119,7 @@ exports.update_complain = async (req, res, next) => {
     const compstatus = req.body.compstatus;
 
     // //change later modified by
-    // const Modifiedby = req.body.Modifiedby;
+    const Modifiedby = req.body.Modifiedby;
     const _id = req.body._id;
 
     const case_exist = await Complain.findOne({
@@ -147,7 +147,7 @@ exports.update_complain = async (req, res, next) => {
     x.compstatus = compstatus;
 
     //later update
-    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = "sample");
+    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = Modifiedby);
     x.save();
 
     // console.log(x);
@@ -167,12 +167,29 @@ exports.delete_complain = async (req, res) => {
   try {
     const _id = req.body._id;
 
-    // const Modifiedby = req.body.Modifiedby;
+    const Modifiedby = req.body.Modifiedby;
+
+    const complain_exist = await Complainss.findOne({ compid: _id, Status: 1 });
+
+    if (complain_exist)
+      throw createError(
+        403,
+        `Cannot be erased since there is already a record in the complaint table.`
+      );
+
+    const document_exist = await Docs.findOne({ compid: _id, Status: 1 });
+
+    if (document_exist)
+      throw createError(
+        403,
+        `Cannot be erased since there is already a record in the Document table.`
+      );
 
     const x = await Complain.findOne({ _id: _id });
     if (!x) throw createError(403, `Case not found!`);
     x.Status = 0;
-    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = "");
+    x.Modifiedby = Modifiedby;
+    x.DateModified = DATE.dateWithTime();
     x.save();
     res.send({ success: "Case Successfully Delete" });
   } catch (e) {
@@ -205,8 +222,8 @@ exports.create_complains = async (req, res, next) => {
     const description = req.body.description;
     const compstatus = req.body.compstatus;
 
-    // // const Createdby = req.body.Createdby;
-    // // const Modifiedby = req.body.Modifiedby;
+    const Createdby = req.body.Createdby;
+    const Modifiedby = req.body.Modifiedby;
 
     const details = {
       compid: compid,
@@ -215,9 +232,9 @@ exports.create_complains = async (req, res, next) => {
       description: description,
       compstatus: compstatus,
       DateCreated: DATE.dateWithTime(),
-      Createdby: "sample",
+      Createdby: Createdby,
       DateModified: DATE.dateWithTime(),
-      Modifiedby: "sample",
+      Modifiedby: Modifiedby,
       Status: 1,
     };
 
@@ -249,7 +266,7 @@ exports.update_complains = async (req, res, next) => {
     const compstatus = req.body.compstatus;
 
     // //change later modified by
-    // const Modifiedby = req.body.Modifiedby;
+    const Modifiedby = req.body.Modifiedby;
 
     const compnatureexist = await Complainss.findOne({
       compnature: compnature,
@@ -269,7 +286,7 @@ exports.update_complains = async (req, res, next) => {
     x.compstatus = compstatus;
 
     //later update
-    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = "sample");
+    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = Modifiedby);
     const resu = x.save();
 
     if (!resu) throw createError(403, "Something went wrong while saving");
@@ -284,12 +301,12 @@ exports.delete_complains = async (req, res) => {
   try {
     const _id = req.body._id;
 
-    // const Modifiedby = req.body.Modifiedby;
+    const Modifiedby = req.body.Modifiedby;
 
     const x = await Complainss.findOne({ _id: _id });
     if (!x) throw createError(403, `Case not found!`);
     x.Status = 0;
-    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = "");
+    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = Modifiedby);
     x.save();
     res.send({ success: "Successfully Delete" });
   } catch (e) {
@@ -301,6 +318,8 @@ exports.delete_complains = async (req, res) => {
 exports.create_docs = async (req, res, next) => {
   try {
     const compid = req.body.id;
+    const Createdby = req.body.Createdby;
+    const Modifiedby = req.body.Modifiedby;
 
     const doc_file = req.files.doc_file; // library express file upload //Complainssant
     doc_file.mv(`../client/public/docs/` + doc_file.name);
@@ -309,9 +328,9 @@ exports.create_docs = async (req, res, next) => {
       compid: compid,
       docname: doc_file.name,
       DateCreated: DATE.dateWithTime(),
-      Createdby: "sample",
+      Createdby: Createdby,
       DateModified: DATE.dateWithTime(),
-      Modifiedby: "sample",
+      Modifiedby: Modifiedby,
       Status: 1,
     };
 
@@ -326,7 +345,7 @@ exports.create_docs = async (req, res, next) => {
     const x = await newDocs.save(); //saving to db
 
     if (!x) throw createError(403, "Something went wrong while creating");
-    console.log(x);
+
     res.send({ success: "Document saved" });
   } catch (e) {
     res.send({ error: e.message });
@@ -354,12 +373,12 @@ exports.delete_docs = async (req, res) => {
     const _id = req.body._id;
 
     // console.log(_id);
-    // const Modifiedby = req.body.Modifiedby;
+    const Modifiedby = req.body.Modifiedby;
 
     const x = await Docs.findOne({ _id: _id });
     if (!x) throw createError(403, `Docs not found!`);
     x.Status = 0;
-    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = "");
+    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = Modifiedby);
     x.save();
     res.send({ success: "Successfully Delete" });
   } catch (e) {

@@ -12,13 +12,13 @@ exports.file_upload = async (req, res, next) => {
       filehold.mv(`../client/public/img/` + filehold.name); // to get the file in fetch by formdata and save in path/folder
       const imageofcomp = filehold.name;
       data.imageofcomp = imageofcomp;
-      data.save();
+      await data.save();
     }
     if (filehold2) {
       filehold2.mv(`../client/public/img/` + filehold2.name);
       const imageofresp = filehold2.name;
       data.imageofresp = imageofresp;
-      data.save();
+      await data.save();
     }
 
     res.send({ success: `Successfully Created`, id: param });
