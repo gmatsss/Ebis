@@ -178,11 +178,10 @@ const Lup_action = (props) => {
         pagination: { pageSize: 10, pageIndex: 0 },
         density: "compact",
         columnVisibility: {
-          gender: false,
           Createdby: false,
           DateCreated: false,
           Status: false,
-          _id: false,
+          id: false,
         },
       }}
       enableRowActions
