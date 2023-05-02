@@ -171,7 +171,7 @@ const lup_comp_form = (props) => {
   return (
     <Modal
       show={show}
-      onHide={handleClose}
+      onHide={handle_cancel}
       backdrop="static"
       keyboard={false}
       centered
@@ -276,6 +276,7 @@ const lup_comp_form = (props) => {
                 variant="standard"
                 value={complaint.description}
                 multiline
+                maxRows={10}
                 onChange={(e) =>
                   setComplaint({
                     ...complaint,

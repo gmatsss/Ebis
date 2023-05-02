@@ -7,6 +7,9 @@ const fs = require("fs");
 
 const Complainss = require("../models/Lupon_complain");
 const Docs = require("../models/Lupon_docs_complain");
+const Member = require("../models/member");
+
+const member_action = require("../models/Lupon_member&action");
 
 exports.create_complain = async (req, res, next) => {
   try {
@@ -150,7 +153,6 @@ exports.update_complain = async (req, res, next) => {
     (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = Modifiedby);
     x.save();
 
-    // console.log(x);
     if (!req.files) {
       res.send({ success: `Successfully updated to database` });
     } else {
@@ -372,7 +374,6 @@ exports.delete_docs = async (req, res) => {
   try {
     const _id = req.body._id;
 
-    // console.log(_id);
     const Modifiedby = req.body.Modifiedby;
 
     const x = await Docs.findOne({ _id: _id });
@@ -381,6 +382,279 @@ exports.delete_docs = async (req, res) => {
     (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = Modifiedby);
     x.save();
     res.send({ success: "Successfully Delete" });
+  } catch (e) {
+    res.send({ error: e.message });
+  }
+};
+
+//complain tabs
+exports.create_casemember = async (req, res, next) => {
+  try {
+    const memberid = req.body.memberid;
+    const caseid = req.body.caseid;
+    const Createdby = req.body.Createdby;
+    const Modifiedby = req.body.Modifiedby;
+
+    // const id_remark = (Math.random() + 1).toString(36).substring(7);
+
+    const member = await Member.findOne({
+      _id: { $eq: memberid },
+    });
+
+    if (!member) throw createError(403, `member not found!`);
+
+    const details = {
+      caseid: caseid,
+      memberid: memberid,
+      code: member.code,
+      luponmember: member.fname + " " + member.lname,
+      position: member.position,
+      gender: member.gender,
+      DateCreated: DATE.dateWithTime(),
+      Createdby: Createdby,
+      DateModified: DATE.dateWithTime(),
+      Modifiedby: Modifiedby,
+      Status: 1,
+    };
+
+    const reinsert = await member_action.findOne({
+      memberid: { $eq: memberid },
+      caseid: { $eq: caseid },
+      Status: 0,
+    });
+
+    if (reinsert) {
+      reinsert.Status = 1;
+      (reinsert.DateModified = DATE.dateWithTime()),
+        (reinsert.Modifiedby = Modifiedby);
+      reinsert.save();
+
+      res.send({ success: `Already paticapated reinserted instead` });
+    } else {
+      const memberexist = await member_action.findOne({
+        memberid: { $eq: memberid },
+        caseid: { $eq: caseid },
+        Status: 1,
+      });
+
+      if (memberexist)
+        throw createError(
+          403,
+          `Lupon member ${details.luponmember} already participated on this case!`
+        );
+
+      const newmember_action = new member_action(details);
+      const x = await newmember_action.save(); //saving to db
+      if (!x) throw createError(403, "Something went wrong while creating");
+
+      res.send({ success: `Successfully Created` });
+    }
+  } catch (e) {
+    res.send({ error: e.message });
+  }
+};
+
+exports.get_casemember = async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    //sort by code
+    const x = await member_action.find({ caseid: id, Status: 1 }).sort({
+      DateModified: -1,
+    });
+
+    if (!x) throw createError(403, "Complain Not found!");
+
+    res.send(x);
+  } catch (e) {
+    res.send({ error: "Something went wrong, Please try again" });
+  }
+};
+
+exports.delete_casemember = async (req, res) => {
+  try {
+    const memberid = req.body.id;
+    const caseid = req.body.caseid;
+    const Modifiedby = req.body.Modifiedby;
+
+    const x = await member_action.findOne({
+      memberid: memberid,
+      caseid: caseid,
+    });
+    if (!x) throw createError(403, `Member not found!`);
+    x.Status = 0;
+    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = Modifiedby);
+    x.save();
+
+    res.send({ success: "Successfully Delete" });
+  } catch (e) {
+    res.send({ error: e.message });
+  }
+};
+
+exports.create_action = async (req, res, next) => {
+  try {
+    const id_remark = (Math.random() + 1).toString(36).substring(7);
+    const memberid = req.body.memberid;
+    const caseid = req.body.caseid;
+    const remark = req.body.remark;
+    const Createdby = req.body.Createdby;
+    const Modifiedby = req.body.Modifiedby;
+
+    const details = {
+      id: id_remark,
+      remark: remark,
+      DateCreated: DATE.dateWithTime(),
+      Createdby: Createdby,
+      DateModified: DATE.dateWithTime(),
+      Modifiedby: Modifiedby,
+      Status: 1,
+    };
+
+    const addremark = await member_action.updateOne(
+      {
+        memberid: { $eq: memberid },
+        caseid: { $eq: caseid },
+        Status: 1,
+      },
+      { $push: { remarks: details } }
+    );
+
+    if (!addremark) throw createError(403, `Cannot not add remark!`);
+
+    res.send({ success: `Succesfully added remarks` });
+  } catch (e) {
+    res.send({ error: e.message });
+  }
+};
+
+exports.get_remarks = async (req, res) => {
+  try {
+    const caseid = req.params.caseid;
+    const memberid = req.params.memberid;
+
+    const resu = await member_action
+      .findOne({
+        caseid: caseid,
+        memberid: memberid,
+        Status: 1,
+      })
+      .sort({
+        DateModified: 1,
+      });
+
+    if (!resu) return;
+    const data = resu.remarks;
+    if (!data) throw createError(403, "Remarks Not found!");
+    res.send(data);
+  } catch (e) {
+    res.send({ error: e });
+  }
+};
+
+exports.update_action = async (req, res, next) => {
+  try {
+    const id_remark = req.body.id;
+    const memberid = req.body.memberid;
+    const caseid = req.body.caseid;
+    const remark = req.body.remark;
+    const Modifiedby = req.body.Modifiedby;
+
+    const findfirst = await member_action.findOne(
+      {
+        memberid: memberid,
+        caseid: caseid,
+        Status: 1,
+      },
+      { remarks: { $elemMatch: { id: id_remark } } }
+    );
+
+    // // Pull the array item which we want to update
+    const pullfirst = await member_action.updateOne(
+      { memberid: { $eq: memberid }, caseid: { $eq: caseid }, Status: 1 },
+
+      { $pull: { remarks: { id: id_remark } } }
+    );
+
+    // // Push the updated item back in to the array (we're updating content to "zzz")
+    const edited = await member_action.updateOne(
+      { memberid: { $eq: memberid }, caseid: { $eq: caseid }, Status: 1 },
+      {
+        $push: {
+          remarks: {
+            id: id_remark,
+            remark: remark,
+            DateCreated: findfirst.remarks.DateCreated.toString(),
+            Createdby: findfirst.remarks.Createdby.toString(),
+            DateModified: DATE.dateWithTime(),
+            Modifiedby: Modifiedby,
+            Status: 1,
+          },
+        },
+      }
+    );
+
+    if (!edited) throw createError(403, "Please contact admin!");
+    res.send({ success: `Succesfully edit remarks` });
+  } catch (e) {
+    res.send({ error: e.message });
+  }
+};
+
+exports.delete_action = async (req, res, next) => {
+  try {
+    const id_remark = req.body.id;
+    const memberid = req.body.memberid;
+    const caseid = req.body.caseid;
+    const remark = req.body.remark;
+    const Modifiedby = req.body.Modifiedby;
+
+    const findfirst = await member_action.findOne({
+      Status: 1,
+      remarks: { $elemMatch: { id: id_remark } },
+    });
+
+    // Pull the array item which we want to update
+    const pullfirst = await member_action.updateOne(
+      {
+        memberid: { $eq: findfirst.memberid },
+        caseid: { $eq: findfirst.caseid },
+        Status: 1,
+      },
+
+      { $pull: { remarks: { id: id_remark } } }
+    );
+
+    // // Push the updated item back in to the array (we're updating content to "zzz")
+    const edited = await member_action.updateOne(
+      {
+        memberid: { $eq: findfirst.memberid },
+        caseid: { $eq: findfirst.caseid },
+        Status: 1,
+      },
+      {
+        $push: {
+          remarks: {
+            id: id_remark,
+            remark: remark,
+            DateCreated: findfirst.remarks.DateCreated.toString(),
+            Createdby: findfirst.remarks.Createdby.toString(),
+            DateModified: DATE.dateWithTime(),
+            Modifiedby: Modifiedby,
+            Status: 0,
+          },
+        },
+      }
+    );
+
+    const idparams = {
+      memberid: findfirst.memberid,
+      caseid: findfirst.caseid,
+    };
+
+    if (!edited) throw createError(403, "Please contact admin!");
+
+    res.send({ success: `Succesfully deleted remarks`, id: idparams });
   } catch (e) {
     res.send({ error: e.message });
   }

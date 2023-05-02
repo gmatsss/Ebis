@@ -40,6 +40,7 @@ const lup_comp = (props) => {
 
   //received id
   props.receivdatacomp(Datareceived);
+
   //back to lupon compnent
 
   useEffect(() => {

@@ -30,12 +30,14 @@ const Lupon = (props) => {
   //data holder
   let Passdatatocomp = (datainfo) => {};
   let Passdatatodocs = (datainfo) => {};
+  let Passdatatomem = (datainfo) => {};
   let Passdata = (datainfo) => {};
   // Data holder and passing to lupon forms
   const Getdata = (datainfo) => {
     Passdata && Passdata(datainfo);
     Passdatatocomp && Passdatatocomp(datainfo);
     Passdatatodocs && Passdatatodocs(datainfo);
+    Passdatatomem && Passdatatomem(datainfo);
   };
 
   //bridge to pass to lupon form
@@ -48,8 +50,14 @@ const Lupon = (props) => {
     Passdatatocomp = handler;
   };
 
+  //data to docs
   const receivdatadocs = (handler) => {
     Passdatatodocs = handler;
+  };
+
+  //data to member
+  const receivdatamem = (handler) => {
+    Passdatatomem = handler;
   };
 
   let Passdata2 = (datainfo2) => {};
@@ -220,7 +228,7 @@ const Lupon = (props) => {
             />
           </MDBTabsPane>
           <MDBTabsPane show={basicActive === "tab4"} className="bg-white">
-            <Lup_mem_act />
+            <Lup_mem_act receivdatamem={receivdatamem} />
           </MDBTabsPane>
         </MDBTabsContent>
       </div>
