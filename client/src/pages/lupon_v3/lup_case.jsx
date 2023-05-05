@@ -454,6 +454,7 @@ const lup_case = (props) => {
                     name="Address"
                     placeholder="Address"
                     multiline
+                    maxRows={2}
                     sx={{
                       "& .MuiTextField-root": { m: 1, width: "25ch" },
                     }}
@@ -673,6 +674,7 @@ const lup_case = (props) => {
                     className="form-control my-2"
                     label="Address"
                     multiline
+                    maxRows={2}
                     value={complainant.addressofresp}
                     onChange={(e) =>
                       setComplainant({

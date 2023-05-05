@@ -58,6 +58,11 @@ const routes = [
     icon: <BiAnalyse />,
   },
   {
+    path: "/ckeditor",
+    name: "ckeditor",
+    icon: <AiTwotoneFileExclamation />,
+  },
+  {
     path: "/Location",
     name: "Location",
     icon: <AiTwotoneFileExclamation />,

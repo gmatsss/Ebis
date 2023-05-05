@@ -33,7 +33,8 @@ mongoose
 //middleware
 app.use(morgan("dev"));
 var corsOptions = {
-  origin: "http://localhost:8000",
+  // "http://localhost:8000",https://ebis.onrender.com
+  origin: "http://localhost:8000", //to the client side connection
   methods: ["GET", "POST"],
   credentials: true,
   preflightContinue: true,
@@ -71,7 +72,7 @@ const memberRoutes = require("./routes/Member");
 app.use("/member", memberRoutes);
 
 //port
-const port = process.env.PORT || 8001;
+const port = process.env.PORT;
 
 //listener
 const server = app.listen(port, () =>
