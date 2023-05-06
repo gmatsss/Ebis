@@ -71,6 +71,10 @@ app.use("/lupon", luponRoutes);
 const memberRoutes = require("./routes/Member");
 app.use("/member", memberRoutes);
 
+//report routes start
+const reportRoutes = require("./routes/reports");
+app.use("/report", reportRoutes);
+
 //port
 const port = process.env.PORT;
 

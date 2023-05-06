@@ -32,6 +32,7 @@ import citizen_page from "./pages/citizen/citizen_page";
 import lupon_page from "./pages/lupon/lupon_page";
 import member_list from "./pages/member/member";
 import Ckeditor from "./pages/ckeditor/example";
+import Report_page from "./pages/report/report_page";
 
 import Lupon_v2 from "./pages/lupon_v2/lupon";
 import Lupon_v3 from "./pages/lupon_v3/lupon";
@@ -71,6 +72,7 @@ const App = (props) => {
             <Route exact path="/Lupon_v2" component={Lupon_v2} />
             <Route exact path="/Lupon_v3" component={Lupon_v3} />
             <Route exact path="/ckeditor" component={Ckeditor} />
+            <Route exact path="/report" component={Report_page} />
           </Switch>
         </SideBar>
       );

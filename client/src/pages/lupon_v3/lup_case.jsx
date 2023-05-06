@@ -143,6 +143,7 @@ const lup_case = (props) => {
       if (insave === "Edit") {
         setCommandAction(false);
         setPrevimg_comp("");
+        setPrevimg_resp("");
       } else {
         reset_input();
         setCommandAction(false);
