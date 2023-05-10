@@ -4,17 +4,20 @@ const router = express.Router();
 //contorllers
 const {
   create_report,
-  //   get_citizen,
-  //   update_citizen,
-  //   delete_citizen,
+  get_report,
+  one_report,
+  update_report,
+  delete_report,
+  create_setup,
 } = require("../controllers/report");
 
-//edited
-
 router.post("/create/record", create_report);
-// router.get("/g/record", get_citizen);
-// router.post("/u/record", update_citizen);
+router.get("/g/record", get_report);
+router.get("/g/r/record/:id", one_report);
+router.post("/u/record", update_report);
+router.post("/u/setup/record", create_setup);
+
 // //softdelete
-// router.post("/d/record", delete_citizen);
+router.post("/d/record", delete_report);
 
 module.exports = router;
