@@ -245,12 +245,15 @@ const Lup_table = (props) => {
 
   props.PassreloadCreator(getHandler);
 
+  const [case_id, setCase_id] = useState("");
+
   useEffect(() => {
     let datapass;
     for (name in rowSelection) {
       datapass = name;
     }
     getdata(datapass);
+    setCase_id(datapass);
   }, [rowSelection, data]);
 
   const getdata = async (newdata) => {
@@ -283,6 +286,61 @@ const Lup_table = (props) => {
     }
   }, [props.disablefromdocs]);
 
+  window.shownoModalDialog = function (arg1, arg2, arg3) {
+    var i;
+    var w;
+    var h;
+    var resizable = "no";
+    var scroll = "no";
+    var status = "no";
+    var mdattrs = arg3.split(";");
+    for (i = 0; i < mdattrs.length; i++) {
+      var mdattr = mdattrs[i].split(":");
+      var n = mdattr[0],
+        v = mdattr[1];
+      if (n) {
+        n = n.trim().toLowerCase();
+      }
+      if (v) {
+        v = v.trim().toLowerCase();
+      }
+      if (n == "dialogheight") {
+        h = v.replace("px", "");
+      } else if (n == "dialogwidth") {
+        w = v.replace("px", "");
+      } else if (n == "resizable") {
+        resizable = v;
+      } else if (n == "scroll") {
+        scroll = v;
+      } else if (n == "status") {
+        status = v;
+      }
+    }
+    var left = window.screenX + window.outerWidth / 2 - w / 2;
+    var top = window.screenY + window.outerHeight / 2 - h / 2;
+    if (top > 30) {
+      top = top - 30;
+    }
+    var targetWin = window.open(
+      arg1,
+      arg1,
+      "toolbar=no, location=no, directories=no, status=" +
+        status +
+        ", menubar=no, scrollbars=" +
+        scroll +
+        ", resizable=" +
+        resizable +
+        ", copyhistory=no, width=" +
+        w +
+        ", height=" +
+        h +
+        ", top=" +
+        top +
+        ", left=" +
+        left
+    );
+    targetWin.focus();
+  };
   return (
     <div
       style={{
@@ -290,7 +348,7 @@ const Lup_table = (props) => {
         pointerEvents: statecomp ? "auto" : "none",
       }}
     >
-      <div className="mb-2">
+      <div className="mb-2 d-flex flex-row">
         {!change ? (
           <Button_lex
             variant="primary"
@@ -317,7 +375,26 @@ const Lup_table = (props) => {
         )}
 
         {!change ? (
-          <div></div>
+          <div>
+            <Button_lex
+              variant="success"
+              className="btn-component mx-1"
+              title="Save"
+              size="lg"
+              onClick={() => {
+                window.shownoModalDialog(
+                  `http://localhost:8000/print/${case_id}`,
+                  "",
+                  "dialogtop:50; dialogleft: 230; center:1; dialogwidth:790; dialogheight:570; scroll:0; resizable:1"
+                );
+              }}
+            >
+              <span className="d-flex justify-content-around">
+                {/* <SaveIcon /> */}
+                Print
+              </span>
+            </Button_lex>
+          </div>
         ) : (
           <Button_lex
             variant="danger"

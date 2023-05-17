@@ -1,0 +1,9 @@
+
+variable every {data} in setup
+
+location
+
+register page have the location data 
+
+login homepage admin and userpage
+
