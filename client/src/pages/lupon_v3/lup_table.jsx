@@ -16,6 +16,8 @@ import { toast } from "react-toastify";
 //api
 import { useFetch } from "../../api/lupon";
 
+import Window from "../../window";
+
 import { UserContext } from "../../UserContext";
 const Lup_table = (props) => {
   const { user } = useContext(UserContext);
@@ -179,7 +181,7 @@ const Lup_table = (props) => {
   const [change, setChange] = useState(false);
 
   //optionally, you can manage the row selection state yourself
-  const [rowSelection, setRowSelection] = useState({});
+  const [rowSelection, setRowSelection] = useState("");
   //setting row id to form
   const [rowid, setRowid] = useState("");
 
@@ -286,61 +288,6 @@ const Lup_table = (props) => {
     }
   }, [props.disablefromdocs]);
 
-  window.shownoModalDialog = function (arg1, arg2, arg3) {
-    var i;
-    var w;
-    var h;
-    var resizable = "no";
-    var scroll = "no";
-    var status = "no";
-    var mdattrs = arg3.split(";");
-    for (i = 0; i < mdattrs.length; i++) {
-      var mdattr = mdattrs[i].split(":");
-      var n = mdattr[0],
-        v = mdattr[1];
-      if (n) {
-        n = n.trim().toLowerCase();
-      }
-      if (v) {
-        v = v.trim().toLowerCase();
-      }
-      if (n == "dialogheight") {
-        h = v.replace("px", "");
-      } else if (n == "dialogwidth") {
-        w = v.replace("px", "");
-      } else if (n == "resizable") {
-        resizable = v;
-      } else if (n == "scroll") {
-        scroll = v;
-      } else if (n == "status") {
-        status = v;
-      }
-    }
-    var left = window.screenX + window.outerWidth / 2 - w / 2;
-    var top = window.screenY + window.outerHeight / 2 - h / 2;
-    if (top > 30) {
-      top = top - 30;
-    }
-    var targetWin = window.open(
-      arg1,
-      arg1,
-      "toolbar=no, location=no, directories=no, status=" +
-        status +
-        ", menubar=no, scrollbars=" +
-        scroll +
-        ", resizable=" +
-        resizable +
-        ", copyhistory=no, width=" +
-        w +
-        ", height=" +
-        h +
-        ", top=" +
-        top +
-        ", left=" +
-        left
-    );
-    targetWin.focus();
-  };
   return (
     <div
       style={{
@@ -376,24 +323,9 @@ const Lup_table = (props) => {
 
         {!change ? (
           <div>
-            <Button_lex
-              variant="success"
-              className="btn-component mx-1"
-              title="Save"
-              size="lg"
-              onClick={() => {
-                window.shownoModalDialog(
-                  `http://localhost:8000/print/${case_id}`,
-                  "",
-                  "dialogtop:50; dialogleft: 230; center:1; dialogwidth:790; dialogheight:570; scroll:0; resizable:1"
-                );
-              }}
-            >
-              <span className="d-flex justify-content-around">
-                {/* <SaveIcon /> */}
-                Print
-              </span>
-            </Button_lex>
+            <div style={{ pointerEvents: rowSelection ? "auto" : "none" }}>
+              <Window getid={case_id} />
+            </div>
           </div>
         ) : (
           <Button_lex

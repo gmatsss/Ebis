@@ -43,6 +43,7 @@
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
     "framer-motion": "^10.2.5",
+    "html-react-parser": "^3.0.16",
     "material-react-table": "^1.9.1",
     "mdb-react-ui-kit": "^6.0.0",
     "notiflix": "^3.2.6",
@@ -53,6 +54,8 @@
     "react-icons": "^4.8.0",
     "react-router-dom": "^5.3.4",
     "react-scripts": "^5.0.1",
+    "react-select": "^5.7.3",
+    "react-to-print": "^2.14.12",
     "react-toastify": "^9.1.1",
     "styled-components": "^5.3.9",
     "web-vitals": "^3.3.0"

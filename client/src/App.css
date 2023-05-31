@@ -173,3 +173,14 @@ main {
   bottom: 0px;
   left: 0px;
 }
+
+@media print {
+  * {
+    margin: 1px !important;
+    padding: 1px !important;
+  }
+
+  li {
+    margin: 0 0 10px 20px !important;
+  }
+}
