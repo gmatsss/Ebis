@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Modal from "react-bootstrap/Modal";
+import { MyWindowPortal } from "../../MywindowPortal";
 import { CKEditor } from "ckeditor4-react"; //install ckeditor4
 import { Button } from "@mui/material";
 
@@ -44,18 +45,22 @@ const Report_setup = (props) => {
   }, [props.reportsetup]);
 
   const handle_saved = async () => {
-    const details = {
-      _id: rtpsetup._id,
-      reportsetup: rtpsetup.reportsetup,
-      Modifiedby: user,
-    };
+    try {
+      const details = {
+        _id: rtpsetup._id,
+        reportsetup: rtpsetup.reportsetup,
+        Modifiedby: user,
+      };
 
-    const result = await sendRequest("/u/setup/record", "POST", details);
-    if (result && result.error) throw result.error;
-    handleClose();
-    toast.success(result.success);
+      const result = await sendRequest("/u/setup/record", "POST", details);
+      if (result && result.error) throw result.error;
+      handleClose();
+      toast.success(result.success);
 
-    props.onreloadsetup();
+      props.onreloadsetup();
+    } catch (error) {
+      toast.error(error);
+    }
   };
 
   return (
