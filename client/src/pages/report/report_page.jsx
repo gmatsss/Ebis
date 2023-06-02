@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Report_table from "./report_table";
 import Report_form from "./report_form";
-import Report_setup from "./report_setup";
+
 const Report_page = () => {
   const onadd = (datain) => {
     addvar && addvar(datain);
@@ -63,12 +63,6 @@ const Report_page = () => {
             reportid={reportid}
             onsetup={onsetup}
             receiveonreloadsetup={receiveonreloadsetup}
-          />
-
-          <Report_setup
-            receivesetup={receivesetup}
-            reportsetup={reportone}
-            onreloadsetup={onreloadsetup}
           />
         </div>
       </div>
