@@ -75,7 +75,7 @@ app.use("/member", memberRoutes);
 const reportRoutes = require("./routes/reports");
 app.use("/report", reportRoutes);
 
-//location routes start
+// location routes start
 const locationRoutes = require("./routes/locations");
 app.use("/location", locationRoutes);
 

@@ -4,3 +4,5 @@ report name the primary key -oks
 print must get the report name for lupon 
 
 
+my mongo MONGO_URI
+//mongodb+srv://gmaturan60:WLADnoBCVngV6yFA@clusterko.3ffbkcw.mongodb.net/test

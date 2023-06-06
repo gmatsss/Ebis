@@ -170,7 +170,7 @@ const Lup_action = (props) => {
           </Button>
         </Box>
       )}
-      state={{ showSkeletons: data ? false : true }} //pass our managed row selection state to the table to use
+      state={{ showProgressBars: data ? false : true }} //pass our managed row selection state to the table to use
       positionToolbarAlertBanner="none"
       enableStickyHeader
       muiTableContainerProps={{ sx: { maxHeight: "215px" } }}

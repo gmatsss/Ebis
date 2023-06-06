@@ -75,38 +75,40 @@ const Report_table = (props) => {
 
   const [data, setData] = useState({});
   const [rptstp, setRptstp] = useState();
-
+  const [location, setLocation] = useState("");
   const [reportdata, setReportdata] = useState({
     _id: "",
     menuname: "",
   });
 
-  let shouldlog = useRef(true);
-
-  const getHandler = async () => {
-    setData("");
+  const getHandler = async (data, dat2) => {
     try {
-      //alert loading
-      const result = await toast.promise(sendRequest("/g/record", "GET"), {
-        pending: "Please wait data is loading",
-        success: "Data loaded",
-        error: `Error`,
-      });
+      if (!data) return handle_reset();
+      const result = await toast.promise(
+        sendRequest(
+          `/g/record/${data.value}/${data.district}/${data.city}/${data.province}/${data.region}/`,
+          "GET"
+        ),
+        {
+          pending: "Please wait data is loading",
+          success: "Data loaded",
+          error: `Error`,
+        }
+      );
       if (result && result.error) return toast.error({ error: result.error });
       setData(result);
+      setLocation(data);
+      if (!dat2) {
+        setStatebutton(true);
+        setRowSelection("");
+      }
     } catch (e) {
       console.log(e);
       setLoggeedMessage({ error: e.message });
     }
   };
 
-  useEffect(() => {
-    if (shouldlog.current) {
-      shouldlog.current = false;
-      getHandler();
-    }
-  }, []);
-
+  props.rebrgyvar(getHandler);
   props.receivereload(getHandler);
   props.receiveonreloadsetup(getHandler);
 
@@ -133,9 +135,9 @@ const Report_table = (props) => {
     }
   };
 
-  const handle_refresh = () => {
+  const handle_reset = () => {
     setRowSelection("");
-    getHandler("");
+    setData("");
     setStatebutton(true);
   };
 
@@ -153,7 +155,7 @@ const Report_table = (props) => {
         const result = await sendRequest("/d/record", "POST", details);
         if (result.error) return toast.error(result.error);
         toast.success(result.success);
-        handle_refresh();
+        getHandler(location);
       },
       function cancelCb() {
         return;
@@ -225,62 +227,64 @@ const Report_table = (props) => {
 
   return (
     <div>
-      <div className="container-fluid border shadow p-3 mb-5 bg-body d-flex justify-content-center ">
-        <div className="row  d-flex flex-row ">
+      <div className="container-fluid  p-3 mb-3 bg-body d-flex ">
+        <div className="row d-flex flex-row ">
           <div className="col-sm-3 col-lg-3 ">
             <Button
-              style={{ height: "100%", width: "100%" }}
+              style={{ width: "100%" }}
               variant="contained"
               startIcon={
-                <AddCircleIcon style={{ height: "50px", width: "50px" }} />
+                <AddCircleIcon style={{ height: "30px", width: "30px" }} />
               }
-              size="large"
+              size="small"
               color="success"
               onClick={() => {
                 props.onadd("add");
               }}
             >
-              Create <br /> report
+              Create
             </Button>
           </div>
           <div className="col-sm-3 col-lg-3 ">
             <Button
-              style={{ height: "100%", width: "100%" }}
+              style={{ width: "100%" }}
               variant="contained"
               startIcon={
-                <ModeEditIcon style={{ height: "50px", width: "50px" }} />
+                <ModeEditIcon style={{ height: "30px", width: "30px" }} />
               }
-              size="large"
+              size="small"
               color="info"
               disabled={statebutton ? true : false}
               onClick={() => {
                 props.onadd("edit");
               }}
             >
-              Edit <br /> report
+              Edit
             </Button>
           </div>
           <div className="col-sm-3 col-lg-3 ">
             <Button
+              style={{ width: "100%" }}
               variant="contained"
-              endIcon={<DeleteIcon style={{ height: "50px", width: "50px" }} />}
-              style={{ height: "100%", width: "100%" }}
-              size="large"
+              startIcon={
+                <DeleteIcon style={{ height: "30px", width: "30px" }} />
+              }
+              size="small"
               color="error"
               disabled={statebutton ? true : false}
               onClick={() => {
                 handle_delete();
               }}
             >
-              Delete <br /> report
+              Delete
             </Button>
           </div>
           <div className="col-sm-3 col-lg-3 ">
             <Button
+              style={{ width: "100%" }}
               variant="contained"
-              endIcon={<FeedIcon style={{ height: "50px", width: "50px" }} />}
-              style={{ height: "100%", width: "100%" }}
-              size="large"
+              startIcon={<FeedIcon style={{ height: "30px", width: "30px" }} />}
+              size="small"
               color="secondary"
               disabled={statebutton ? true : false}
               // onClick={() => {
@@ -294,7 +298,7 @@ const Report_table = (props) => {
                 )
               }
             >
-              Setup <br /> report
+              Setup
             </Button>
           </div>
         </div>
@@ -321,8 +325,9 @@ const Report_table = (props) => {
           },
         })}
         positionToolbarAlertBanner="none"
+        muiTableContainerProps={{ sx: { maxHeight: "350px" } }}
         onRowSelectionChange={setRowSelection} //connect internal row selection state to your own
-        state={{ rowSelection, showSkeletons: data ? false : true }} //pass our managed row selection state to the table to use
+        state={{ rowSelection, showProgressBars: data ? false : true }} //pass our managed row selection state to the table to use
         initialState={{
           pagination: { pageSize: 10, pageIndex: 0 },
           density: "spacious",
@@ -346,7 +351,7 @@ const Report_table = (props) => {
             <Tooltip arrow placement="bottom" title="Refresh">
               <IconButton
                 onClick={() => {
-                  handle_refresh();
+                  getHandler(location);
                 }}
               >
                 <RefreshIcon />

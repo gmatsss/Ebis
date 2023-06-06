@@ -6,14 +6,24 @@ const Complain = require("../models/Lupon");
 
 exports.create_report = async (req, res) => {
   try {
+    const barangay = req.body.barangay;
+    const district = req.body.district;
+    const city = req.body.city;
+    const province = req.body.province;
+    const region = req.body.region;
     const reportname = req.body.reportname;
     const menuname = req.body.menuname;
     const categoryname = req.body.categoryname;
-    const reportsetup = req.body.reportsetup;
+    // const reportsetup = req.body.reportsetup;
     const Createdby = req.body.Createdby;
     const Modifiedby = req.body.Modifiedby;
 
     const details = {
+      region: region,
+      province: province,
+      city: city,
+      district: district,
+      barangay: barangay,
       reportname: reportname,
       menuname: menuname,
       categoryname: categoryname,
@@ -25,7 +35,14 @@ exports.create_report = async (req, res) => {
       Status: 1,
     };
 
-    const reportnameExist = await reports.findOne({ reportname: reportname });
+    const reportnameExist = await reports.findOne({
+      reportname: reportname,
+      barangay: { $eq: barangay },
+      district: { $eq: district },
+      city: { $eq: city },
+      province: { $eq: province },
+      region: { $eq: region },
+    });
     if (reportnameExist)
       throw createError(403, `Menu name ${reportname} already saved!`);
 
@@ -43,12 +60,24 @@ exports.create_report = async (req, res) => {
 exports.get_report = async (req, res) => {
   try {
     //sort by code
-    const x = await reports.find({ Status: 1 }).sort({ DateModified: -1 });
+    const barangay = req.params.barangay;
+    const district = req.params.district;
+    const city = req.params.city;
+    const province = req.params.province;
+    const region = req.params.region;
+
+    const x = await reports
+      .find({
+        region: region,
+        province: province,
+        city: city,
+        district: district,
+        barangay: barangay,
+        Status: 1,
+      })
+      .sort({ DateModified: -1 });
 
     if (!x) throw createError(403, "Not found!");
-
-    //response with delay seconds
-
     res.send(x);
   } catch (e) {
     res.send({ error: "Something went wrong, Please try again" });
@@ -68,6 +97,13 @@ exports.one_report = async (req, res) => {
 
 exports.update_report = async (req, res) => {
   try {
+    //location
+    const barangay = req.body.barangay;
+    const district = req.body.district;
+    const city = req.body.city;
+    const province = req.body.province;
+    const region = req.body.region;
+
     const reportname = req.body.reportname;
     const menuname = req.body.menuname;
     const categoryname = req.body.categoryname;
@@ -77,6 +113,11 @@ exports.update_report = async (req, res) => {
     const reportnameexist = await reports.findOne({
       reportname: reportname,
       _id: { $ne: _id },
+      barangay: { $eq: barangay },
+      district: { $eq: district },
+      city: { $eq: city },
+      province: { $eq: province },
+      region: { $eq: region },
     });
     if (reportnameexist)
       throw createError(403, `Menu name ${reportname} already saved!`);

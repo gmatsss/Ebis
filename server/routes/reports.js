@@ -14,7 +14,8 @@ const {
 } = require("../controllers/report");
 
 router.post("/create/record", create_report);
-router.get("/g/record", get_report);
+router.get("/g/record/:barangay/:district/:city/:province/:region", get_report);
+
 router.get("/g/r/record/:id", one_report);
 router.get("/g/c/record/:id", get_case_one);
 router.get("/g/comp/record/:id", get_complain_one);

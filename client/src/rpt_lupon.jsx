@@ -18,14 +18,6 @@ const Rpt_lupon = () => {
 
   const myContainer = useRef();
 
-  const [complainant, setComplainant] = useState("");
-
-  const toggleWindowPortal = () => {
-    SetShowWindowPortal(!showWindowPortal);
-    if (showWindowPortal === false) setGetreport("");
-    getHandler();
-  };
-
   let shouldlog = useRef(true);
   // datatable in to pass
   useEffect(() => {

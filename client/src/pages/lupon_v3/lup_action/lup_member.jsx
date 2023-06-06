@@ -203,7 +203,7 @@ const Lupon_member = (props) => {
         },
       })}
       onRowSelectionChange={setRowSelection} //connect internal row selection state to your own
-      state={{ rowSelection, showSkeletons: data ? false : true }} //pass our managed row selection state to the table to use
+      state={{ rowSelection, showProgressBars: data ? false : true }} //pass our managed row selection state to the table to use
       positionToolbarAlertBanner="none"
       enableStickyHeader
       muiTableContainerProps={{ sx: { maxHeight: "215px" } }}
