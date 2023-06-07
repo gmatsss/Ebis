@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useLocation } from "react-router-dom";
 
 import { Button } from "@mui/material";
@@ -8,7 +8,10 @@ import Select from "react-select";
 
 import Parser from "html-react-parser";
 import ReactToPrint from "react-to-print";
+import { UserContext } from "./UserContext";
+
 const Rpt_lupon = () => {
+  const { user } = useContext(UserContext);
   const loc = useLocation();
 
   const { sendRequest } = useFetch();
@@ -31,7 +34,10 @@ const Rpt_lupon = () => {
     try {
       //alert loading
       const arr = [];
-      const result = await sendRequest("/g/record", "GET");
+      const result = await sendRequest(
+        `/g/record/${user.barangay}/${user.district}/${user.city}/${user.province}/${user.region}/`,
+        "GET"
+      );
       if (result && result.error) return toast.error({ error: result.error });
       await result.map((res) => {
         return arr.push({ value: res._id, label: res.reportname });

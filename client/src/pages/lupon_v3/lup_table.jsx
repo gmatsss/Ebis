@@ -42,23 +42,22 @@ const Lup_table = (props) => {
   };
 
   const getHandler = async () => {
-    // props.onStateform("REFRESH");
-
     setData("");
-    // setRowSelection("");
-    // setRowid("");
     setState(true);
     setChange(false);
-    // props.onPassdata("");
-    // props.onPassdata_2("");
-
     try {
       //alert loading
-      const result = await toast.promise(sendRequest("/g/record", "GET"), {
-        pending: "Please wait data is loading",
-        success: "Data loaded",
-        error: `Error`,
-      });
+      const result = await toast.promise(
+        sendRequest(
+          `/g/record/${user.barangay}/${user.district}/${user.city}/${user.province}/${user.region}/`,
+          "GET"
+        ),
+        {
+          pending: "Please wait data is loading",
+          success: "Data loaded",
+          error: `Error`,
+        }
+      );
 
       setData(result);
 
@@ -226,7 +225,7 @@ const Lup_table = (props) => {
       async function okCb() {
         const formData = new FormData();
         formData.append("_id", data._id);
-        formData.append("Modifiedby", user);
+        formData.append("Modifiedby", user.email);
         const result = await sendRequest("/d/record", "POST", formData);
         if (result.error) return toast.error(result.error);
         toast.success(result.success);

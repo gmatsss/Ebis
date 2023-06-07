@@ -150,7 +150,7 @@ const Report_table = (props) => {
       async function okCb() {
         const details = {
           _id: reportdata._id,
-          Modifiedby: user,
+          Modifiedby: user.email,
         };
         const result = await sendRequest("/d/record", "POST", details);
         if (result.error) return toast.error(result.error);

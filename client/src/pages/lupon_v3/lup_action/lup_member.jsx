@@ -105,13 +105,15 @@ const Lupon_member = (props) => {
           `/g/m/record/${props.receivdataid}`,
           "GET"
         );
-        if (result && result.error) throw result.error;
-        setData(result);
-      } else {
-        const result = await sendRequest(`/g/m/record/${param}`, "GET");
+
         if (result && result.error) throw result.error;
         setData(result);
       }
+      //  else {
+      //   const result = await sendRequest(`/g/m/record/${param}`, "GET");
+      //   if (result && result.error) throw result.error;
+      //   setData(result);
+      // }
     } catch (e) {
       toast.error({ error: e.message });
     }
@@ -141,7 +143,7 @@ const Lupon_member = (props) => {
         const formData = new FormData();
         formData.append("id", deleteid);
         formData.append("caseid", props.receivdataid);
-        formData.append("Modifiedby", user);
+        formData.append("Modifiedby", user.email);
         const result = await sendRequest("/d/m/record", "POST", formData);
         if (result.error) return toast.error(result.error);
         toast.success(result.success);

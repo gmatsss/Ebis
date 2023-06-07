@@ -52,12 +52,12 @@ const App = (props) => {
 
   //preventing lossing the user data
   useEffect(() => {
-    const unsubscribe = getLoggedInUser()
+    getLoggedInUser()
       .then((res) => {
         if (res.error) {
           toast(res.error);
           history.push("/login");
-        } else setUser(res.username);
+        } else setUser(res.user);
       })
       .catch((err) => toast(err));
   }, []);

@@ -31,8 +31,8 @@ const Lup_memmodal = (props) => {
 
     formData.append("memberid", memberid);
     formData.append("caseid", caseid);
-    formData.append("Createdby", user);
-    formData.append("Modifiedby", user);
+    formData.append("Createdby", user.email);
+    formData.append("Modifiedby", user.email);
 
     try {
       if (!memberid) return toast.warning("Please select member");
@@ -40,7 +40,7 @@ const Lup_memmodal = (props) => {
       if (result.error) throw result.error;
       toast.success(result.success);
       setShow(false);
-      props.onreload(caseid);
+      props.onreload("");
     } catch (error) {
       toast.error(error);
     }
@@ -112,7 +112,10 @@ const Lup_memmodal = (props) => {
     setData("");
     try {
       //alert loading
-      const result = await sendRequest("/g/record", "GET");
+      const result = await sendRequest(
+        `/g/record/${user.barangay}/${user.district}/${user.city}/${user.province}/${user.region}/`,
+        "GET"
+      );
       if (result && result.error) return toast.error({ error: result.error });
       setData(result);
     } catch (e) {

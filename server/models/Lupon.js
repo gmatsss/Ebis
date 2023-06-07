@@ -5,7 +5,6 @@ var Complain = new mongoose.Schema({
   province: String,
   city: String,
   district: String,
-  zone: String,
   barangay: String,
   caseno: String,
   nameofcomp: String,

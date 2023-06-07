@@ -11,7 +11,7 @@ import Select from "react-select";
 const Report_form = (props) => {
   const { user } = useContext(UserContext);
   const { sendRequest } = useFetch();
-  const { sendRequest: sendlocation } = uselocation();
+
   // modal state
   const [show, setShow] = useState(false);
   //save state
@@ -23,6 +23,7 @@ const Report_form = (props) => {
   };
 
   //state locations
+  const { sendRequest: sendlocation } = uselocation();
   const [selectedValue, setSelectedValue] = useState({
     province: null,
     cities: null,
@@ -91,7 +92,8 @@ const Report_form = (props) => {
       reportname: report.reportname,
       menuname: report.menuname,
       categoryname: report.categoryname,
-      Modifiedby: user,
+      Createdby: user.email,
+      Modifiedby: user.email,
     };
     if (insave === "edit") {
       try {

@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 var Member = new mongoose.Schema({
+  region: String,
+  province: String,
+  city: String,
+  district: String,
+  barangay: String,
   code: String,
   fname: String,
   lname: String,
