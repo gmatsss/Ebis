@@ -183,7 +183,7 @@ const Lupon = (props) => {
               onClick={() => handleBasicClick("tab2")}
               active={basicActive === "tab2"}
             >
-              Complain
+              Hearing
             </MDBTabsLink>
           </MDBTabsItem>
           <MDBTabsItem>

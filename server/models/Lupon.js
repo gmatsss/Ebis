@@ -28,4 +28,4 @@ var Complain = new mongoose.Schema({
   Status: Number,
 });
 
-module.exports = mongoose.model("Lupon_case", Complain);
+module.exports = mongoose.model("Lupon", Complain);

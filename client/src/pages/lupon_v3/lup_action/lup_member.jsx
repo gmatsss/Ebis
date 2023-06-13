@@ -177,7 +177,7 @@ const Lupon_member = (props) => {
             }}
             variant="contained"
           >
-            Add Member
+            Add
           </Button>
           <Button
             color="error"
@@ -187,7 +187,7 @@ const Lupon_member = (props) => {
             }}
             variant="contained"
           >
-            Delete Selected Accounts
+            Delete
           </Button>
         </Box>
       )}

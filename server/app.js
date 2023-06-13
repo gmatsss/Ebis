@@ -67,6 +67,9 @@ app.use("/api", citizenRoutes);
 const luponRoutes = require("./routes/Lupon");
 app.use("/lupon", luponRoutes);
 
+const luponRoutes_v4 = require("./routes/Lupon_routes");
+app.use("/lupon_v4", luponRoutes_v4);
+
 //member routes start
 const memberRoutes = require("./routes/Member");
 app.use("/member", memberRoutes);

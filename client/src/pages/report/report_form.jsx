@@ -22,30 +22,6 @@ const Report_form = (props) => {
     setInsave("");
   };
 
-  //state locations
-  const { sendRequest: sendlocation } = uselocation();
-  const [selectedValue, setSelectedValue] = useState({
-    province: null,
-    cities: null,
-    district: null,
-    barangay: null,
-  });
-
-  const [optionvalue, setoptionvalue] = useState({
-    region: null,
-    province: null,
-    cities: null,
-    district: null,
-    barangay: null,
-  });
-
-  const [disable, setDisable] = useState({
-    province: true,
-    cities: true,
-    district: true,
-    barangay: true,
-  });
-
   const reset_input = () => {
     setReport({
       reportname: "",
@@ -63,8 +39,6 @@ const Report_form = (props) => {
 
   const onreceived = (data) => {
     if (data === "add") {
-      if (!selectedValue.barangay)
-        return toast.warning("Please select barangay ");
       setShow(true);
     } else if (data === "edit") {
       setShow(true);
@@ -84,11 +58,11 @@ const Report_form = (props) => {
   const handle_saved = async () => {
     const details = {
       _id: report._id,
-      barangay: selectedValue.barangay.value,
-      district: selectedValue.barangay.district,
-      city: selectedValue.barangay.city,
-      province: selectedValue.barangay.province,
-      region: selectedValue.barangay.region,
+      barangay: user.barangay,
+      district: user.district,
+      city: user.city,
+      province: user.province,
+      region: user.region,
       reportname: report.reportname,
       menuname: report.menuname,
       categoryname: report.categoryname,
@@ -105,7 +79,7 @@ const Report_form = (props) => {
         setShow(false);
         toast.success(result);
         reset_input();
-        props.onreload(selectedValue.barangay, insave);
+        props.onreload(true);
         setInsave("");
       } catch (error) {
         return toast.error(error);
@@ -120,201 +94,12 @@ const Report_form = (props) => {
         setShow(false);
         toast.success(result);
         reset_input();
-        props.onreload(selectedValue.barangay);
+        props.onreload(true);
       } catch (error) {
         return toast.error(error);
       }
     }
   };
-
-  useEffect(() => {
-    getHandler();
-  }, []);
-
-  const getHandler = async () => {
-    try {
-      //alert loading
-      const arr = [];
-      const result = await sendlocation("/g/record", "GET");
-      if (result.error) throw result.error;
-      await result.map((res) => {
-        return arr.push({ value: res.code, label: res.description });
-      });
-      setoptionvalue({ ...optionvalue, region: arr });
-    } catch (e) {
-      toast.error({ error: e.message });
-    }
-  };
-
-  const handleregion_change = async (sel) => {
-    setSelectedValue({
-      ...selectedValue,
-      province: "",
-      cities: "",
-      district: "",
-      barangay: "",
-    });
-    setDisable({
-      ...disable,
-      province: true,
-      cities: true,
-      district: true,
-      barangay: true,
-    });
-
-    try {
-      if (!sel.value) return;
-      const arr = [];
-      const result = await sendlocation(`/p/record/${sel.value}`, "GET");
-
-      if (result && result.error) throw result.error;
-      await result.map((res) => {
-        return arr.push({
-          value: res.code,
-          region: res.region,
-          label: res.description,
-        });
-      });
-
-      setoptionvalue({ ...optionvalue, province: arr });
-      setDisable({
-        ...disable,
-        province: false,
-        cities: true,
-        district: true,
-        barangay: true,
-      });
-    } catch (e) {
-      toast.error({ error: e.message });
-    }
-  };
-
-  const handleprovince_change = async (value) => {
-    setSelectedValue({
-      ...selectedValue,
-      province: value,
-      cities: "",
-      district: "",
-      barangay: "",
-    });
-    setDisable({
-      ...disable,
-      cities: true,
-      district: true,
-      barangay: true,
-    });
-
-    try {
-      const arr = [];
-      const result = await sendlocation(
-        `/c/record/${value.value}/${value.region}/`,
-        "GET"
-      );
-      if (result && result.error) throw result.error;
-      await result.map((res) => {
-        return arr.push({
-          value: res.code,
-          region: res.region,
-          province: res.province,
-          label: res.description,
-        });
-      });
-      setoptionvalue({ ...optionvalue, cities: arr });
-      setDisable({
-        ...disable,
-        cities: false,
-        district: true,
-        barangay: true,
-      });
-    } catch (e) {
-      toast.error({ error: e.message });
-    }
-  };
-
-  const handlecities_change = async (value) => {
-    setSelectedValue({
-      ...selectedValue,
-      cities: value,
-      district: "",
-      barangay: "",
-    });
-    setDisable({
-      ...disable,
-      district: true,
-      barangay: true,
-    });
-
-    try {
-      if (!value) return;
-      const arr = [];
-      const result = await sendlocation(
-        `/d/record/${value.value}/${value.province}/${value.region}/`,
-        "GET"
-      );
-
-      if (result && result.error) throw result.error;
-      await result.map((res) => {
-        return arr.push({
-          value: res.code,
-          region: res.region,
-          province: res.province,
-          city: res.city,
-          label: res.description,
-        });
-      });
-      setoptionvalue({ ...optionvalue, district: arr });
-      setDisable({
-        ...disable,
-        district: false,
-        barangay: true,
-      });
-    } catch (e) {
-      toast.error({ error: e.message });
-    }
-  };
-
-  const handledistrict_change = async (value) => {
-    setSelectedValue({ ...selectedValue, district: value, barangay: "" });
-    setDisable({
-      ...disable,
-      barangay: true,
-    });
-    try {
-      if (!value) return;
-      const arr = [];
-      const result = await sendlocation(
-        `/b/record/${value.value}/${value.city}/${value.province}/${value.region}/`,
-        "GET"
-      );
-      if (result && result.error) throw result.error;
-      await result.map((res) => {
-        return arr.push({
-          value: res.code,
-          region: res.region,
-          province: res.province,
-          city: res.city,
-          district: res.district,
-          label: res.description,
-        });
-      });
-      setoptionvalue({ ...optionvalue, barangay: arr });
-      setDisable({
-        ...disable,
-        barangay: false,
-      });
-    } catch (e) {
-      toast.error({ error: e.message });
-    }
-  };
-
-  const handlebaranagay_change = async (value) => {
-    setSelectedValue({ ...selectedValue, barangay: value });
-  };
-
-  useEffect(() => {
-    if (!selectedValue.barangay) return props.brgyvar("");
-    props.brgyvar(selectedValue.barangay);
-  }, [selectedValue.barangay]);
 
   return (
     <div>
@@ -386,66 +171,6 @@ const Report_form = (props) => {
           </Button>
         </Modal.Footer>
       </Modal>
-
-      <div>
-        <h1 className="text-muted text-center">Select location</h1>
-      </div>
-
-      <div
-        className="m-2 d-flex flex-column justify-content-evenly "
-        style={{ height: "350px" }}
-      >
-        <hr />
-        <div>
-          <Select
-            placeholder="Select Region"
-            isClearable={true}
-            options={optionvalue.region}
-            isLoading={optionvalue.region ? false : true}
-            onChange={handleregion_change}
-          />
-        </div>
-        <div>
-          <Select
-            placeholder="Select Province"
-            isClearable={true}
-            isDisabled={disable.province}
-            options={optionvalue.province}
-            value={selectedValue.province}
-            onChange={handleprovince_change}
-          />
-        </div>
-        <div>
-          <Select
-            placeholder="Select Cities"
-            isClearable={true}
-            isDisabled={disable.cities}
-            options={optionvalue.cities}
-            value={selectedValue.cities}
-            onChange={handlecities_change}
-          />
-        </div>
-        <div>
-          <Select
-            placeholder="Select District"
-            isClearable={true}
-            isDisabled={disable.district}
-            options={optionvalue.district}
-            value={selectedValue.district}
-            onChange={handledistrict_change}
-          />
-        </div>
-        <div>
-          <Select
-            placeholder="Select Barangay"
-            isClearable={true}
-            isDisabled={disable.barangay}
-            options={optionvalue.barangay}
-            value={selectedValue.barangay}
-            onChange={handlebaranagay_change}
-          />
-        </div>
-      </div>
     </div>
   );
 };

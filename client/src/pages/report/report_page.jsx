@@ -53,7 +53,7 @@ const Report_page = () => {
         <h1>Report</h1>
       </div>
       <div className="row">
-        <div className="col-lg-9">
+        <div className="col-lg-12">
           <Report_table
             onadd={onadd}
             receivereload={receivereload}
@@ -63,14 +63,13 @@ const Report_page = () => {
             rebrgyvar={rebrgyvar}
           />
         </div>
-        <div className="col-lg-3">
-          <Report_form
-            receiveadd={receiveadd}
-            onreload={onreload}
-            reportone={reportone}
-            brgyvar={brgyvar}
-          />
-        </div>
+
+        <Report_form
+          receiveadd={receiveadd}
+          onreload={onreload}
+          reportone={reportone}
+          brgyvar={brgyvar}
+        />
       </div>
     </div>
   );

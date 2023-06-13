@@ -40,6 +40,7 @@ import Rpt_lupon from "./rpt_lupon";
 
 import Lupon_v2 from "./pages/lupon_v2/lupon";
 import Lupon_v3 from "./pages/lupon_v3/lupon";
+import Lupon from "./pages/lupon_v4/lupon";
 
 //api functions to prevent lossing the user data when refreshing react app
 import { getLoggedInUser } from "./api/user";
@@ -88,6 +89,7 @@ const App = (props) => {
                   <Route exact path="/lupon_page" component={lupon_page} />
                   <Route exact path="/Lupon_v2" component={Lupon_v2} />
                   <Route exact path="/Lupon_v3" component={Lupon_v3} />
+                  <Route exact path="/Lupon_v4" component={Lupon} />
                   <Route exact path="/ckeditor" component={Ckeditor} />
                   <Route exact path="/report" component={Report_page} />
                   <Route exact path="/location" component={Location_page} />

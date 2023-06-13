@@ -62,11 +62,11 @@ const routes = [
     name: "Lupon v3",
     icon: <BiAnalyse />,
   },
-  // {
-  //   path: "/ckeditor",
-  //   name: "ckeditor",
-  //   icon: <AiTwotoneFileExclamation />,
-  // },
+  {
+    path: "/Lupon_v4",
+    name: "Lupon",
+    icon: <BiAnalyse />,
+  },
   {
     path: "/report",
     name: "Report",

@@ -83,10 +83,10 @@ const Report_table = (props) => {
 
   const getHandler = async (data, dat2) => {
     try {
-      if (!data) return handle_reset();
+      // if (!data) return handle_reset();
       const result = await toast.promise(
         sendRequest(
-          `/g/record/${data.value}/${data.district}/${data.city}/${data.province}/${data.region}/`,
+          `/g/record/${user.barangay}/${user.district}/${user.city}/${user.province}/${user.region}/`,
           "GET"
         ),
         {
@@ -97,11 +97,11 @@ const Report_table = (props) => {
       );
       if (result && result.error) return toast.error({ error: result.error });
       setData(result);
-      setLocation(data);
-      if (!dat2) {
-        setStatebutton(true);
-        setRowSelection("");
-      }
+      // setLocation(data);
+      // if (!dat2) {
+      //   setStatebutton(true);
+      //   setRowSelection("");
+      // }
     } catch (e) {
       console.log(e);
       setLoggeedMessage({ error: e.message });
@@ -111,6 +111,10 @@ const Report_table = (props) => {
   props.rebrgyvar(getHandler);
   props.receivereload(getHandler);
   props.receiveonreloadsetup(getHandler);
+
+  useEffect(() => {
+    getHandler();
+  }, []);
 
   useEffect(() => {
     let datapass;

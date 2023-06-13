@@ -1,8 +1,11 @@
-new widow for print -oks
-report name the primary key -oks
+switch comp and resp to table
+case will have hearing mximum of third
+case will change data
+hearing tab 
 
-print must get the report name for lupon 
-
+revert report as user is now per barangay
 
 my mongo MONGO_URI
 //mongodb+srv://gmaturan60:WLADnoBCVngV6yFA@clusterko.3ffbkcw.mongodb.net/test
+
+
