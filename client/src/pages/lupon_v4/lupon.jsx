@@ -104,27 +104,22 @@ const Lupon = () => {
   return (
     <div className="container-fluid ">
       <div className="row">
-        <div className="d-flex text-start">
+        <div className="d-flex">
           <h1>Lupon</h1>
-          <div className="m-1 mt-3 d-flex text-muted">
-            <h4>{usr_loc.region},</h4>
-            <h4>{usr_loc.province},</h4>
-            <h4>{usr_loc.city},</h4>
-            <h4>{usr_loc.district},</h4>
-            <h4>{usr_loc.barangay}</h4>
-          </div>
+          {usr_loc && (
+            <div className="m-1 mt-3 d-flex text-muted">
+              <h5>{usr_loc.region},</h5>
+              <h5>{usr_loc.province},</h5>
+              <h5>{usr_loc.city},</h5>
+              <h5>{usr_loc.district},</h5>
+              <h5>{usr_loc.barangay}</h5>
+            </div>
+          )}
         </div>
       </div>
       <div className="row">
         <div className="col-lg-12">
-          <Lup_table
-            onPassdata={Getdata}
-            // onPassdata_2={Getdata2}
-            // onStateform={trigger}
-            // PassreloadCreator={PassreloadCreator}
-            // disablefromcomp={disablecase}
-            disablefromdocs={disablecasedocs}
-          />
+          <Lup_table onPassdata={Getdata} disablefromdocs={disablecasedocs} />
         </div>
       </div>
 
@@ -170,15 +165,6 @@ const Lupon = () => {
         <MDBTabsContent>
           <MDBTabsPane show={basicActive === "tab1"} className="bg-white">
             <Lupon_respcomp receiveRespcomp={receiveRespcomp} />
-
-            {/* <Lup_case
-              PassdataCreator={PassdataCreator}
-              receiverCreator={receiverCreator}
-              onReload={Getreload}
-              PasscomplainCreator={handle_complain}
-              receivedocs={handle_docs}
-              onCaseshow={handle_caseshow}
-            /> */}
           </MDBTabsPane>
           <MDBTabsPane show={basicActive === "tab2"} className="bg-white">
             <Lupon_hearing receiveid={receivdatacomp} />

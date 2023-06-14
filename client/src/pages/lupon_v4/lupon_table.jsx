@@ -495,11 +495,7 @@ const Lup_table = (props) => {
         centered
       >
         <Modal.Header closeButton>
-          {modal_title ? (
-            <Modal.Title>Edit Complain {complaint.compnature}</Modal.Title>
-          ) : (
-            <Modal.Title>Create Case</Modal.Title>
-          )}
+          <Modal.Title>Lupon Case</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="container-fluid">

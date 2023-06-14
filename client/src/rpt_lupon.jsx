@@ -32,90 +32,151 @@ const Rpt_lupon = () => {
 
   const getHandler = async () => {
     try {
-      //alert loading
-      const arr = [];
       const result = await sendRequest(
-        `/g/record/${user.barangay}/${user.district}/${user.city}/${user.province}/${user.region}/`,
+        `/g/r/record/647e8bf5f379b12cb9a8473e`,
         "GET"
       );
-      if (result && result.error) return toast.error({ error: result.error });
-      await result.map((res) => {
-        return arr.push({ value: res._id, label: res.reportname });
+      console.log(result);
+      const getcase = await sendRequest(
+        `/g/c/record/${loc.hash.replace("#", "")}`,
+        "GET"
+      );
+
+      const arrayofresp = getcase.respondent.map((resp) => {
+        return <span style={{ borderBottom: "1px solid" }}>{resp},</span>;
       });
-      setOptions(arr);
+
+      const arrayofcomp = getcase.complainant.map((comp) => {
+        return <span style={{ borderBottom: "1px solid" }}>{comp}, </span>;
+      });
+
+      const hearing = getcase.hearing.map((hear) => {
+        return (
+          <div
+            className="m-3"
+            style={{ borderBottom: "1px solid" }}
+            key={hear._id}
+          >
+            <div className="d-flex justify-content-around mb-2">
+              <p style={{ borderBottom: "1px solid" }}>
+                Hearing Title: <span className="fw-bold">{hear.title}</span>
+              </p>
+              <p style={{ borderBottom: "1px solid" }}>
+                Hearing Date:
+                <span className="fw-bold">{hear.casedate}</span>
+              </p>
+            </div>
+
+            <p>
+              <span className="h5">Hearing outcome:</span>
+              <span style={{ borderBottom: "1px solid" }}>
+                {hear.hearingremarks}
+              </span>
+            </p>
+            <p>
+              Case status:{" "}
+              <span
+                className={
+                  hear.hearingstatus === "Settled"
+                    ? "text-success fst-italic"
+                    : "text-danger fst-italic"
+                }
+              >
+                {hear.hearingstatus}
+              </span>{" "}
+            </p>
+          </div>
+        );
+      });
+
+      const member = getcase.members.map((mem) => {
+        const remark = mem.remarks.map((remarks) => {
+          return remarks.remark;
+        });
+        return (
+          <div
+            className="m-3"
+            style={{ borderBottom: "1px solid" }}
+            key={mem._id}
+          >
+            <li style={{ borderBottom: "1px solid" }}>
+              Member name: {mem.luponmember}
+            </li>
+            <li style={{ borderBottom: "1px solid" }}>
+              Position: {mem.position}
+            </li>
+            <li>Remarks: {remark} </li>
+          </div>
+        );
+      });
+
+      setGetreport(
+        Parser(result[0].reportsetup, {
+          replace: (domNode) => {
+            if (domNode.attribs && domNode.attribs.name === "respondent") {
+              return (
+                <span style={{ borderBottom: "1px solid" }}>{arrayofresp}</span>
+              );
+            }
+            if (domNode.attribs && domNode.attribs.name === "complainant") {
+              return (
+                <span style={{ borderBottom: "1px solid" }}>{arrayofcomp}</span>
+              );
+            }
+            if (domNode.attribs && domNode.attribs.name === "caseno") {
+              return (
+                <span
+                  className="fst-italic h3"
+                  style={{ borderBottom: "1px solid", color: "red" }}
+                >
+                  {getcase.caseno}
+                </span>
+              );
+            }
+            if (domNode.attribs && domNode.attribs.name === "casenature") {
+              return (
+                <span
+                  className="fst-italic h5"
+                  style={{ borderBottom: "1px solid" }}
+                >
+                  {getcase.casenature}
+                </span>
+              );
+            }
+            if (domNode.attribs && domNode.attribs.name === "description") {
+              return (
+                <span style={{ borderBottom: "1px solid" }}>
+                  {getcase.casedesc}
+                </span>
+              );
+            }
+            if (domNode.attribs && domNode.attribs.name === "hearing") {
+              return (
+                <span style={{ borderBottom: "1px solid" }}>{hearing}</span>
+              );
+            }
+            if (domNode.attribs && domNode.attribs.name === "members") {
+              return (
+                <span style={{ borderBottom: "1px solid" }}>{member}</span>
+              );
+            }
+          },
+        })
+      );
     } catch (e) {
-      toast.error({ error: e.message });
+      console.log(e);
+      // toast.error({ error: e.message });
     }
   };
 
-  const handleChange = async (selected) => {
-    const result = await sendRequest(`/g/r/record/${selected.value}`, "GET");
-    const getcase = await sendRequest(
-      `/g/c/record/${loc.hash.replace("#", "")}`,
-      "GET"
-    );
-    const getcomplain = await sendRequest(
-      `/g/comp/record/${loc.hash.replace("#", "")}`,
-      "GET"
-    );
+  // const handleChange = async (selected) => {
 
-    console.log(getcomplain);
-    setGetreport(
-      Parser(result[0].reportsetup, {
-        replace: (domNode) => {
-          if (domNode.attribs && domNode.attribs.name === "respondent") {
-            return (
-              <span style={{ borderBottom: "1px solid" }}>
-                {getcase.nameofresp}
-              </span>
-            );
-          }
-          if (domNode.attribs && domNode.attribs.name === "complainant") {
-            return (
-              <span style={{ borderBottom: "1px solid" }}>
-                {getcase.nameofcomp}
-              </span>
-            );
-          }
-          if (domNode.attribs && domNode.attribs.name === "caseno") {
-            return (
-              <span style={{ borderBottom: "1px solid", color: "red" }}>
-                {getcase.caseno}
-              </span>
-            );
-          }
-          if (domNode.attribs && domNode.attribs.name === "status") {
-            return (
-              <span style={{ borderBottom: "1px solid" }}>
-                {getcomplain.compstatus}
-              </span>
-            );
-          }
-          if (domNode.attribs && domNode.attribs.name === "natureofcomplain") {
-            return (
-              <span style={{ borderBottom: "1px solid" }}>
-                {getcomplain.compnature}
-              </span>
-            );
-          }
-          if (domNode.attribs && domNode.attribs.name === "dateofcomplain") {
-            return (
-              <span style={{ borderBottom: "1px solid" }}>
-                {getcomplain.compdate}
-              </span>
-            );
-          }
-          if (domNode.attribs && domNode.attribs.name === "description") {
-            return (
-              <span style={{ borderBottom: "1px solid" }}>
-                {getcomplain.description}
-              </span>
-            );
-          }
-        },
-      })
-    );
-  };
+  //   // const getcomplain = await sendRequest(
+  //   //   `/g/comp/record/${loc.hash.replace("#", "")}`,
+  //   //   "GET"
+  //   // );
+
+  // };
 
   const handleClose = () => {
     window.close();
@@ -126,12 +187,12 @@ const Rpt_lupon = () => {
         <div className="row">
           <div className="col-9">
             <h1>Lupon Report</h1>
-            <Select
+            {/* <Select
               placeholder="Select report name"
               options={options}
               isLoading={options ? false : true}
               onChange={handleChange}
-            />
+            /> */}
           </div>
 
           <div className="col-3 mt-1">

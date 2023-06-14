@@ -2,7 +2,11 @@ const DATE = require("./date");
 const reports = require("../models/reports");
 const createError = require("http-errors");
 const Complainss = require("../models/Lupon_complain");
-const Complain = require("../models/Lupon");
+const Lupon_case = require("../models/Lupon_case");
+const Lupon_respondent = require("../models/Lupon_respondent");
+const Lupon_complainant = require("../models/Lupon_complainant");
+const Lupon_hearing = require("../models/Lupon_hearing");
+const Lupon_mem_act = require("../models/Lupon_member&action");
 
 exports.create_report = async (req, res) => {
   try {
@@ -179,10 +183,42 @@ exports.get_case_one = async (req, res) => {
   try {
     //sort by code
     const id = req.params.id;
-    const x = await Complain.findOne({ _id: id, Status: 1 });
-    if (!x) throw createError(403, "Complain Not found!");
-    res.send(x);
+
+    const Lcase = await Lupon_case.findOne({ _id: id, Status: 1 });
+    if (!Lcase) throw createError(403, " Not found!");
+
+    const respondents = await Lupon_respondent.find({ caseid: id, Status: 1 });
+    if (!respondents) throw createError(403, " Not found!");
+
+    const complainant = await Lupon_complainant.find({ caseid: id, Status: 1 });
+    if (!complainant) throw createError(403, " Not found!");
+
+    const arrayofresp = respondents.map((resp) => {
+      return resp.nameofresp;
+    });
+    const arrayofcomp = complainant.map((resp) => {
+      return resp.nameofcomp;
+    });
+
+    const hearing = await Lupon_hearing.find({ caseid: id, Status: 1 });
+    if (!hearing) throw createError(403, " Not found!");
+
+    const mem_act = await Lupon_mem_act.find({ caseid: id, Status: 1 });
+    if (!mem_act) throw createError(403, " Not found!");
+
+    const thiscase = {
+      caseno: Lcase.caseno,
+      casenature: Lcase.case_nature,
+      casedesc: Lcase.description,
+      complainant: arrayofcomp,
+      respondent: arrayofresp,
+      hearing: hearing,
+      members: mem_act,
+    };
+
+    res.send(thiscase);
   } catch (e) {
+    console.log(e);
     res.send({ error: "Something went wrong, Please try again" });
   }
 };
@@ -191,7 +227,7 @@ exports.get_complain_one = async (req, res) => {
   try {
     //sort by code
     const id = req.params.id;
-    const x = await Complainss.findOne({ compid: id, Status: 1 });
+    const x = await Complainss.find({ compid: id, Status: 1 });
     if (!x) throw createError(403, "Complain Not found!");
     res.send(x);
   } catch (e) {

@@ -1,9 +1,10 @@
-switch comp and resp to table
-case will have hearing mximum of third
-case will change data
-hearing tab 
+switch comp and resp to table--ok
+case will have hearing mximum of third--ok
+case will change data--ok
+hearing tab --ok
+revert report as user is now per barangay--ok
 
-revert report as user is now per barangay
+display array of report
 
 my mongo MONGO_URI
 //mongodb+srv://gmaturan60:WLADnoBCVngV6yFA@clusterko.3ffbkcw.mongodb.net/test

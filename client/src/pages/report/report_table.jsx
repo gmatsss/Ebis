@@ -84,6 +84,7 @@ const Report_table = (props) => {
   const getHandler = async (data, dat2) => {
     try {
       // if (!data) return handle_reset();
+      handle_reset();
       const result = await toast.promise(
         sendRequest(
           `/g/record/${user.barangay}/${user.district}/${user.city}/${user.province}/${user.region}/`,
@@ -355,7 +356,7 @@ const Report_table = (props) => {
             <Tooltip arrow placement="bottom" title="Refresh">
               <IconButton
                 onClick={() => {
-                  getHandler(location);
+                  getHandler();
                 }}
               >
                 <RefreshIcon />
