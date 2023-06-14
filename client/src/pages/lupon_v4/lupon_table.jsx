@@ -502,7 +502,7 @@ const Lup_table = (props) => {
             <div className="row d-flex justify-content-center">
               <div
                 className="col-lg-10 d-flex flex-column justify-content-evenly"
-                style={{ height: "250px" }}
+                style={{ height: "320px" }}
               >
                 <TextField
                   variant="outlined"
@@ -531,6 +531,8 @@ const Lup_table = (props) => {
                 <TextField
                   variant="outlined"
                   label="Description"
+                  multiline
+                  rows={5}
                   value={case_var.description}
                   onChange={(e) =>
                     setCase_var({

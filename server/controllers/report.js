@@ -54,7 +54,7 @@ exports.create_report = async (req, res) => {
     const x = await newReport.save(); //saving to db
 
     if (!x) throw createError(403, "Something went wrong while creating");
-    console.log(x);
+
     res.send({ success: `Successfully Created` });
   } catch (e) {
     res.send({ error: e.message });
@@ -136,8 +136,6 @@ exports.update_report = async (req, res) => {
     (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = Modifiedby);
     x.save();
 
-    console.log(x);
-
     res.send({ success: "Successfully Edit Report" });
   } catch (e) {
     res.send({ error: e.message });
@@ -218,7 +216,6 @@ exports.get_case_one = async (req, res) => {
 
     res.send(thiscase);
   } catch (e) {
-    console.log(e);
     res.send({ error: "Something went wrong, Please try again" });
   }
 };

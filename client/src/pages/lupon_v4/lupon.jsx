@@ -108,11 +108,10 @@ const Lupon = () => {
           <h1>Lupon</h1>
           {usr_loc && (
             <div className="m-1 mt-3 d-flex text-muted">
-              <h5>{usr_loc.region},</h5>
-              <h5>{usr_loc.province},</h5>
-              <h5>{usr_loc.city},</h5>
-              <h5>{usr_loc.district},</h5>
-              <h5>{usr_loc.barangay}</h5>
+              <h5>
+                {usr_loc.region},{usr_loc.province},{usr_loc.city},
+                {usr_loc.district},{usr_loc.barangay}
+              </h5>
             </div>
           )}
         </div>

@@ -69,7 +69,7 @@ exports.login = async (req, res) => {
     //return a response to user
 
     const { username } = user;
-    console.log("login");
+
     return res.json({
       message: "Success login",
       user,
@@ -94,12 +94,12 @@ exports.getLoggedInUser = (req, res) => {
   });
 };
 
-exports.get_size = (req, res) => {
-  try {
-    const check = db.runCommand({ dbStats: 1, scale: 1024, freeStorage: 1 }); //object user
-    console.log(check);
-    res.send(check);
-  } catch (error) {
-    console.log(error);
-  }
-};
+// exports.get_size = (req, res) => {
+//   try {
+//     const check = db.runCommand({ dbStats: 1, scale: 1024, freeStorage: 1 }); //object user
+//     console.log(check);
+//     res.send(check);
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };

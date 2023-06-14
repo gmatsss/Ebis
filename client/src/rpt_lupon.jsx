@@ -43,11 +43,11 @@ const Rpt_lupon = () => {
       );
 
       const arrayofresp = getcase.respondent.map((resp) => {
-        return <span style={{ borderBottom: "1px solid" }}>{resp},</span>;
+        return <span style={{ borderBottom: "1px solid" }}> {resp}, </span>;
       });
 
       const arrayofcomp = getcase.complainant.map((comp) => {
-        return <span style={{ borderBottom: "1px solid" }}>{comp}, </span>;
+        return <span style={{ borderBottom: "1px solid" }}> {comp}, </span>;
       });
 
       const hearing = getcase.hearing.map((hear) => {

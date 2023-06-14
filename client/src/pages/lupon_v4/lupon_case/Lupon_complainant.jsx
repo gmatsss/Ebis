@@ -85,8 +85,8 @@ const Lupon_complainant = (props) => {
       },
       { header: "Gender", accessorKey: "genderofcomp" },
 
-      { header: "Address", accessorKey: "addressofcomp" },
       { header: "Phone", accessorKey: "phoneofcomp" },
+      { header: "Address", accessorKey: "addressofcomp" },
       {
         header: "DateCreated",
         accessorKey: "DateCreated",
@@ -303,7 +303,7 @@ const Lupon_complainant = (props) => {
             <div className="row d-flex justify-content-center">
               <div
                 className="col-lg-10 d-flex flex-column justify-content-evenly"
-                style={{ height: "275px" }}
+                style={{ height: "380px" }}
               >
                 <TextField
                   variant="outlined"
@@ -345,19 +345,9 @@ const Lupon_complainant = (props) => {
                     <MenuItem value={"Male"}>Male</MenuItem>
                   </Select>
                 </FormControl>
+
                 <TextField
-                  variant="outlined"
-                  label="Address"
-                  value={complainant.addressofcomp}
-                  onChange={(e) =>
-                    setcomplainant({
-                      ...complainant,
-                      addressofcomp: e.target.value,
-                    })
-                  }
-                  error={!complainant.addressofcomp ? true : false}
-                />
-                <TextField
+                  type="number"
                   variant="outlined"
                   label="Phone No"
                   value={complainant.phoneofcomp}
@@ -368,6 +358,21 @@ const Lupon_complainant = (props) => {
                     })
                   }
                   error={!complainant.phoneofcomp ? true : false}
+                />
+
+                <TextField
+                  variant="outlined"
+                  label="Address"
+                  multiline
+                  rows={5}
+                  value={complainant.addressofcomp}
+                  onChange={(e) =>
+                    setcomplainant({
+                      ...complainant,
+                      addressofcomp: e.target.value,
+                    })
+                  }
+                  error={!complainant.addressofcomp ? true : false}
                 />
               </div>
             </div>

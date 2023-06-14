@@ -279,17 +279,6 @@ const Lupon_hearing = (props) => {
                 className="col-lg-10 d-flex flex-column justify-content-evenly"
                 style={{ height: "385px" }}
               >
-                {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DemoContainer components={["DatePicker"]}>
-                    <DatePicker
-                      className="w-100"
-                      label="Hearing Date"
-                      value={casedate}
-                      onChange={(newValue) => setCasedate(newValue)}
-                    />
-                  </DemoContainer>
-                </LocalizationProvider> */}
-
                 <TextField
                   variant="outlined"
                   label="Hearing Date"

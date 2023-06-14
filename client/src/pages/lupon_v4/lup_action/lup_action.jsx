@@ -166,7 +166,7 @@ const Lup_action = (props) => {
             onClick={() => props.toinstructmodal("add")}
             variant="contained"
           >
-            Add remark
+            Add
           </Button>
         </Box>
       )}

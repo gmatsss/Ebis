@@ -86,9 +86,8 @@ const Lupon_respondent = (props) => {
         accessorKey: "nameofresp",
       },
       { header: "Gender", accessorKey: "genderofresp" },
-
-      { header: "Address", accessorKey: "addressofresp" },
       { header: "Phone", accessorKey: "phoneofresp" },
+      { header: "Address", accessorKey: "addressofresp" },
       {
         header: "DateCreated",
         accessorKey: "DateCreated",
@@ -305,7 +304,7 @@ const Lupon_respondent = (props) => {
             <div className="row d-flex justify-content-center">
               <div
                 className="col-lg-10 d-flex flex-column justify-content-evenly"
-                style={{ height: "275px" }}
+                style={{ height: "380px" }}
               >
                 <TextField
                   variant="outlined"
@@ -347,19 +346,9 @@ const Lupon_respondent = (props) => {
                     <MenuItem value={"Male"}>Male</MenuItem>
                   </Select>
                 </FormControl>
+
                 <TextField
-                  variant="outlined"
-                  label="Address"
-                  value={respondent.addressofresp}
-                  onChange={(e) =>
-                    setRespondent({
-                      ...respondent,
-                      addressofresp: e.target.value,
-                    })
-                  }
-                  error={!respondent.addressofresp ? true : false}
-                />
-                <TextField
+                  type="number"
                   variant="outlined"
                   label="Phone No"
                   value={respondent.phoneofresp}
@@ -370,6 +359,21 @@ const Lupon_respondent = (props) => {
                     })
                   }
                   error={!respondent.phoneofresp ? true : false}
+                />
+
+                <TextField
+                  multiline
+                  rows={5}
+                  variant="outlined"
+                  label="Address"
+                  value={respondent.addressofresp}
+                  onChange={(e) =>
+                    setRespondent({
+                      ...respondent,
+                      addressofresp: e.target.value,
+                    })
+                  }
+                  error={!respondent.addressofresp ? true : false}
                 />
               </div>
             </div>
