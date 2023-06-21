@@ -49,6 +49,7 @@ const Lup_table = (props) => {
   const [case_var, setCase_var] = useState({
     _id: "",
     caseno: "",
+    case_date: new Date().toISOString().split("T")[0],
     case_nature: "",
     description: "",
   });
@@ -105,6 +106,7 @@ const Lup_table = (props) => {
           header: "Case no",
           accessorKey: "caseno",
         },
+        { header: "Case Date", accessorKey: "case_date" },
         { header: "Case Nature", accessorKey: "case_nature" },
 
         { header: "Description", accessorKey: "description" },
@@ -141,6 +143,7 @@ const Lup_table = (props) => {
         row.push({
           _id: x._id,
           caseno: x.caseno,
+          case_date: x.case_date,
           case_nature: x.case_nature,
           description: x.description,
           DateCreated: x.DateCreated,
@@ -186,6 +189,7 @@ const Lup_table = (props) => {
     formData.append("region", user.region);
     formData.append("_id", case_var._id);
     formData.append("caseno", case_var.caseno);
+    formData.append("case_date", case_var.case_date);
     formData.append("case_nature", case_var.case_nature);
     formData.append("description", case_var.description);
     formData.append("Createdby", user.email);
@@ -221,6 +225,7 @@ const Lup_table = (props) => {
       ...case_var,
       _id: "",
       caseno: "",
+      case_date: new Date().toISOString().split("T")[0],
       case_nature: "",
       description: "",
     });
@@ -234,6 +239,7 @@ const Lup_table = (props) => {
       ...case_var,
       _id: data._id,
       caseno: data.caseno,
+      case_date: data.case_date,
       case_nature: data.case_nature,
       description: data.description,
     });
@@ -502,7 +508,7 @@ const Lup_table = (props) => {
             <div className="row d-flex justify-content-center">
               <div
                 className="col-lg-10 d-flex flex-column justify-content-evenly"
-                style={{ height: "320px" }}
+                style={{ height: "380px" }}
               >
                 <TextField
                   variant="outlined"
@@ -515,6 +521,19 @@ const Lup_table = (props) => {
                     })
                   }
                   error={!case_var.caseno ? true : false}
+                />
+                <TextField
+                  variant="outlined"
+                  label="Case Date"
+                  type="date"
+                  value={case_var.case_date}
+                  onChange={(e) =>
+                    setCase_var({
+                      ...case_var,
+                      case_date: e.target.value,
+                    })
+                  }
+                  inputProps={{ min: "2019-01-24", max: "2100-05-31" }}
                 />
                 <TextField
                   variant="outlined"

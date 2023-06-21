@@ -10,3 +10,22 @@ my mongo MONGO_URI
 //mongodb+srv://gmaturan60:WLADnoBCVngV6yFA@clusterko.3ffbkcw.mongodb.net/test
 
 
+case date on case table -oks
+dropdown for title 1st to 3rd hearing -oks
+not setted wil be display only in 3rd hearing -oks
+
+on edit hearing when 2nd hearing must be for remdeiation
+
+
+mayor view for barangay report
+summary report
+
+
+report setup
+report another tab
+mrt table menu name category name
+40%left right60%
+selectbox check of resident generate report
+
+remove purpose muna
+

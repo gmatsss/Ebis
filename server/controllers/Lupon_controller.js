@@ -45,6 +45,7 @@ exports.create_case = async (req, res, next) => {
 
     const caseno = req.body.caseno;
     const case_nature = req.body.case_nature;
+    const case_date = req.body.case_date;
     const description = req.body.description;
     const Createdby = req.body.Createdby;
     const Modifiedby = req.body.Modifiedby;
@@ -56,6 +57,7 @@ exports.create_case = async (req, res, next) => {
       district: district,
       barangay: barangay,
       caseno: caseno,
+      case_date: case_date,
       case_nature: case_nature,
       description: description,
 
@@ -96,6 +98,7 @@ exports.update_case = async (req, res, next) => {
     const region = req.body.region;
 
     const caseno = req.body.caseno;
+    const case_date = req.body.case_date;
     const case_nature = req.body.case_nature;
     const description = req.body.description;
     const Modifiedby = req.body.Modifiedby;
@@ -116,6 +119,7 @@ exports.update_case = async (req, res, next) => {
     if (!x) throw createError(403, `Not found!`);
 
     x.caseno = caseno;
+    x.case_date = case_date;
     x.case_nature = case_nature;
     x.description = description;
 
@@ -737,8 +741,18 @@ exports.get_casehearing = async (req, res) => {
 
     if (!x) throw createError(403, "Member Not found!");
 
+    const count = await Lupon_hearing.find({
+      caseid: id,
+      Status: 1,
+    }).count();
+
+    const hearing = {
+      hearing: x,
+      count: count,
+    };
+
     setTimeout(function () {
-      res.send(x);
+      res.send(hearing);
     }, 500);
   } catch (e) {
     res.send({ error: "Something went wrong, Please try again" });
@@ -769,20 +783,43 @@ exports.create_casehearing = async (req, res, next) => {
       Status: 1,
     };
 
-    const count = await Lupon_hearing.find({
-      caseid: caseid,
-    }).count();
-    if (count === 3)
+    // const count = await Lupon_hearing.find({
+    //   caseid: caseid,
+    // }).count();
+    // if (count === 3)
+    //   throw createError(
+    //     403,
+    //     `Each case is limited to three hearings; the status of this case is determined by the outcome of the most recent hearing.`
+    //   );
+
+    const nocase_settele = await Lupon_hearing.findOne({
+      caseid: { $eq: caseid },
+      hearingstatus: "No amicable settlement",
+      Status: 1,
+    });
+    if (nocase_settele)
       throw createError(
         403,
-        `Each case is limited to three hearings; the status of this case is determined by the outcome of the most recent hearing.`
+        `This case is No amicable settlement please contact the lupon administrations`
+      );
+
+    const case_settele = await Lupon_hearing.findOne({
+      caseid: { $eq: caseid },
+      hearingstatus: "Settled",
+      Status: 1,
+    });
+    if (case_settele)
+      throw createError(
+        403,
+        `Case already settled please contact the lupon administrations`
       );
 
     const case_exist = await Lupon_hearing.findOne({
       caseid: { $eq: caseid },
       title: title,
+      Status: 1,
     });
-    if (case_exist) throw createError(403, ` ${title} already saved!`);
+    if (case_exist) throw createError(403, ` ${title} is already done!`);
 
     const newLupon_hearing = new Lupon_hearing(details);
     const x = await newLupon_hearing.save(); //saving to db
@@ -806,16 +843,42 @@ exports.update_casehearing = async (req, res, next) => {
     const Modifiedby = req.body.Modifiedby;
     const _id = req.body._id;
 
+    const nocase_settele = await Lupon_hearing.findOne({
+      caseid: { $eq: caseid },
+      hearingstatus: "No amicable settlement",
+      _id: { $ne: _id },
+      Status: 1,
+    });
+    if (nocase_settele)
+      throw createError(
+        403,
+        ` No amicable settlement found in another hearing please contact the lupon administrations`
+      );
+
+    const case_settele = await Lupon_hearing.findOne({
+      caseid: { $eq: caseid },
+      hearingstatus: "Settled",
+      _id: { $ne: _id },
+      Status: 1,
+    });
+    if (case_settele)
+      throw createError(
+        403,
+        `Case settled found in another hearing please contact the lupon administrations`
+      );
+
     const case_exist = await Lupon_hearing.findOne({
       caseid: { $eq: caseid },
       _id: { $ne: _id },
       title: title,
+      Status: 1,
     });
     if (case_exist) throw createError(403, ` ${title} already saved!`);
 
     const x = await Lupon_hearing.findOne({
       caseid: { $eq: caseid },
       _id: { $eq: _id },
+      Status: 1,
     });
     if (!x) throw createError(403, `Not found!`);
 
@@ -829,6 +892,22 @@ exports.update_casehearing = async (req, res, next) => {
     x.save();
 
     res.send({ success: `Successfully updated to database` });
+  } catch (e) {
+    res.send({ error: e.message });
+  }
+};
+
+exports.delete_casehearing = async (req, res) => {
+  try {
+    const _id = req.body._id;
+    const Modifiedby = req.body.Modifiedby;
+
+    const x = await Lupon_hearing.findOne({ _id: _id });
+    if (!x) throw createError(403, `Docs not found!`);
+    x.Status = 0;
+    (x.DateModified = DATE.dateWithTime()), (x.Modifiedby = Modifiedby);
+    x.save();
+    res.send({ success: "Successfully Delete" });
   } catch (e) {
     res.send({ error: e.message });
   }

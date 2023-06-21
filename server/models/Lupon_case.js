@@ -7,6 +7,7 @@ var Lupon_case = new mongoose.Schema({
   district: String,
   barangay: String,
   caseno: String,
+  case_date: String,
   case_nature: String,
   description: String,
   DateCreated: String,

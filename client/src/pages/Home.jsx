@@ -50,7 +50,7 @@ const Home = () => {
                     <i class="fas fa-users"></i>
                   </div>
                   <div class="mb-4">
-                    <h5 class="card-title mb-0">Users</h5>
+                    <h5 class="card-title mb-0">Case</h5>
                   </div>
                   <div class="row align-items-center mb-2 d-flex">
                     <div class="col-8"></div>
@@ -85,7 +85,7 @@ const Home = () => {
                     <i class=""></i>
                   </div>
                   <div class="mb-4">
-                    <h5 class="card-title mb-0">Customers</h5>
+                    <h5 class="card-title mb-0">Case reseloved</h5>
                   </div>
                   <div class="row align-items-center mb-2 d-flex">
                     <div class="col-8">

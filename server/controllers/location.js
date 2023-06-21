@@ -237,12 +237,6 @@ exports.get_user_loc = async (req, res) => {
       status: 1,
     });
 
-    console.log(region_res.description);
-    console.log(prov_res.description);
-    console.log(city_res.description);
-    console.log(district_res.description);
-    console.log(barangay_res.description);
-
     const loc = {
       region: region_res.description,
       province: prov_res.description,

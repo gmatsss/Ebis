@@ -82,6 +82,9 @@ app.use("/report", reportRoutes);
 const locationRoutes = require("./routes/locations");
 app.use("/location", locationRoutes);
 
+const ResidentRoutes = require("./routes/residents");
+app.use("/residents", ResidentRoutes);
+
 //port
 const port = process.env.PORT;
 

@@ -231,3 +231,31 @@ exports.get_complain_one = async (req, res) => {
     res.send({ error: "Something went wrong, Please try again" });
   }
 };
+
+exports.get_report_window = async (req, res) => {
+  try {
+    //sort by code
+    const barangay = req.params.barangay;
+    const district = req.params.district;
+    const city = req.params.city;
+    const province = req.params.province;
+    const region = req.params.region;
+
+    const x = await reports
+      .find({
+        region: region,
+        province: province,
+        city: city,
+        district: district,
+        barangay: barangay,
+        menuname: "Lupon",
+        Status: 1,
+      })
+      .sort({ DateModified: -1 });
+
+    if (!x) throw createError(403, "Not found!");
+    res.send(x);
+  } catch (e) {
+    res.send({ error: "Something went wrong, Please try again" });
+  }
+};

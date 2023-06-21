@@ -23,6 +23,7 @@ const {
   get_casehearing,
   create_casehearing,
   update_casehearing,
+  delete_casehearing,
 
   get_docs,
   create_docs,
@@ -57,7 +58,7 @@ router.post("/d/c/record", delete_complainant);
 router.get("/g/h/record/:id", get_casehearing);
 router.post("/create/h/record", create_casehearing);
 router.post("/u/h/record", update_casehearing);
-// router.post("/d/c/record", delete_complainant);
+router.post("/d/h/record", delete_casehearing);
 //docs
 router.post("/create/docs", create_docs);
 router.get("/g/d/record/:id", get_docs);

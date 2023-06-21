@@ -95,6 +95,9 @@ const Lupon_hearing = (props) => {
     new Date().toISOString().split("T")[0]
   );
 
+  //params for hearing
+  const [casecount, setCasecount] = useState("");
+
   const [hearing, setHearing] = useState({
     _id: "",
     caseid: "",
@@ -110,8 +113,9 @@ const Lupon_hearing = (props) => {
     try {
       const result = await sendRequest(`/g/h/record/${data}`, "GET");
       if (result && result.error) throw result.error;
-      setData(result);
+      setData(result.hearing);
       setCaseid(data);
+      setCasecount(result.count);
     } catch (e) {
       toast.error(e);
     }
@@ -152,6 +156,32 @@ const Lupon_hearing = (props) => {
       hearingremarks: data.hearingremarks,
     });
     setCasedate(data.casedate);
+  };
+
+  const handleDeleteRow = (data) => {
+    Notiflix.Confirm.show(
+      "Delete ",
+      `Delete this Hearing?`,
+      "Yes",
+      "No",
+      async function okCb() {
+        const formData = new FormData();
+        formData.append("_id", data._id);
+        formData.append("Modifiedby", user.email);
+        const result = await sendRequest("/d/h/record", "POST", formData);
+        if (result.error) return toast.error(result.error);
+        toast.success(result.success);
+        getHandler(data.caseid);
+      },
+      function cancelCb() {
+        return;
+      },
+      {
+        width: "320px",
+        borderRadius: "8px",
+        // etc...
+      }
+    );
   };
 
   const handle_save = async () => {
@@ -201,7 +231,7 @@ const Lupon_hearing = (props) => {
           <Box sx={{ display: "flex", gap: "1rem", p: "4px" }}>
             <Button
               color="success"
-              disabled={caseid ? false : true}
+              disabled={caseid ? (casecount === 3 ? true : false) : true}
               onClick={() => {
                 handle_add();
               }}
@@ -218,12 +248,12 @@ const Lupon_hearing = (props) => {
             <IconButton onClick={() => handle_edit(row.original)}>
               <Edit />
             </IconButton>
-            {/* <IconButton
+            <IconButton
               color="error"
               onClick={() => handleDeleteRow(row.original)}
             >
               <Delete />
-            </IconButton> */}
+            </IconButton>
           </Box>
         )}
         enableStickyHeader
@@ -288,7 +318,7 @@ const Lupon_hearing = (props) => {
                   inputProps={{ min: "2019-01-24", max: "2100-05-31" }}
                 />
 
-                <TextField
+                {/* <TextField
                   variant="outlined"
                   label="Hearing Title"
                   value={hearing.title}
@@ -299,7 +329,40 @@ const Lupon_hearing = (props) => {
                     })
                   }
                   error={!hearing.title ? true : false}
-                />
+                /> */}
+
+                <FormControl variant="outlined">
+                  <InputLabel id="demo-simple-select-label">
+                    Hearing Title
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Hearing Status"
+                    value={hearing.title}
+                    onChange={(e) =>
+                      setHearing({
+                        ...hearing,
+                        title: e.target.value,
+                      })
+                    }
+                    error={!hearing.hearingstatus ? true : false}
+                  >
+                    <MenuItem
+                      value={
+                        !hearing.hearingstatus
+                          ? "1st Hearing"
+                          : hearing.hearingstatus !== "1st Hearing"
+                          ? "1st Hearing"
+                          : hearing.hearingstatus
+                      }
+                    >
+                      1st Hearing
+                    </MenuItem>
+                    <MenuItem value={"2nd Hearing"}>2nd Hearing</MenuItem>
+                    <MenuItem value={"3rd Hearing"}>3rd Hearing</MenuItem>
+                  </Select>
+                </FormControl>
 
                 <FormControl variant="outlined">
                   <InputLabel id="demo-simple-select-label">
@@ -321,18 +384,28 @@ const Lupon_hearing = (props) => {
                     <MenuItem
                       value={
                         !hearing.hearingstatus
-                          ? "For Remediation"
-                          : hearing.hearingstatus !== "For Remediation"
-                          ? "For Remediation"
+                          ? "Settled"
+                          : hearing.hearingstatus !== "Settled"
+                          ? "Settled"
                           : hearing.hearingstatus
                       }
                     >
-                      For Remediation
+                      Settled
                     </MenuItem>
-                    <MenuItem value={"Settled"}>Settled</MenuItem>
-                    <MenuItem value={"No amicable settlement"}>
-                      No amicable settlement
-                    </MenuItem>
+
+                    {state_saved === true && casecount === 2 ? (
+                      <MenuItem value={"For Remediation"}>
+                        For Remediation
+                      </MenuItem>
+                    ) : casecount === 2 || casecount === 3 ? (
+                      <MenuItem value={"No amicable settlement"}>
+                        No amicable settlement
+                      </MenuItem>
+                    ) : (
+                      <MenuItem value={"For Remediation"}>
+                        For Remediation
+                      </MenuItem>
+                    )}
                   </Select>
                 </FormControl>
 
