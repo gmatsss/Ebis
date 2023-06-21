@@ -746,8 +746,15 @@ exports.get_casehearing = async (req, res) => {
       Status: 1,
     }).count();
 
+    const case_settele = await Lupon_hearing.findOne({
+      caseid: { $eq: id },
+      hearingstatus: "Settled",
+      Status: 1,
+    });
+
     const hearing = {
       hearing: x,
+      settle: case_settele,
       count: count,
     };
 
@@ -755,6 +762,7 @@ exports.get_casehearing = async (req, res) => {
       res.send(hearing);
     }, 500);
   } catch (e) {
+    console.log(e);
     res.send({ error: "Something went wrong, Please try again" });
   }
 };

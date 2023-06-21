@@ -97,6 +97,7 @@ const Lupon_hearing = (props) => {
 
   //params for hearing
   const [casecount, setCasecount] = useState("");
+  const [casettle, setCasettle] = useState(true);
 
   const [hearing, setHearing] = useState({
     _id: "",
@@ -116,6 +117,11 @@ const Lupon_hearing = (props) => {
       setData(result.hearing);
       setCaseid(data);
       setCasecount(result.count);
+      if (!result.settle) {
+        setCasettle(false);
+      } else {
+        setCasettle(true);
+      }
     } catch (e) {
       toast.error(e);
     }
@@ -221,7 +227,7 @@ const Lupon_hearing = (props) => {
       }
     }
   };
-
+  console.log(casettle);
   return (
     <div>
       <MaterialReactTable
@@ -243,9 +249,13 @@ const Lupon_hearing = (props) => {
         )}
         state={{ showProgressBars: data ? false : true }} //pass our managed row selection state to the table to use
         enableRowActions
-        renderRowActions={({ row }) => (
+        renderRowActions={({ row, table }) => (
           <Box>
-            <IconButton onClick={() => handle_edit(row.original)}>
+            <IconButton
+              onClick={() => handle_edit(row.original)}
+              disabled={casettle}
+              style={{ pointerEvents: casettle ? "none" : "auto" }}
+            >
               <Edit />
             </IconButton>
             <IconButton
