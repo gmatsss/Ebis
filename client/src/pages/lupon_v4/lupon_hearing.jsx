@@ -97,7 +97,7 @@ const Lupon_hearing = (props) => {
 
   //params for hearing
   const [casecount, setCasecount] = useState("");
-  const [casettle, setCasettle] = useState(true);
+  const [casettle, setCasettle] = useState(false);
 
   const [hearing, setHearing] = useState({
     _id: "",
@@ -117,10 +117,10 @@ const Lupon_hearing = (props) => {
       setData(result.hearing);
       setCaseid(data);
       setCasecount(result.count);
-      if (!result.settle) {
-        setCasettle(false);
-      } else {
+      if (result.settle) {
         setCasettle(true);
+      } else {
+        setCasettle(false);
       }
     } catch (e) {
       toast.error(e);
@@ -227,7 +227,7 @@ const Lupon_hearing = (props) => {
       }
     }
   };
-  console.log(casettle);
+
   return (
     <div>
       <MaterialReactTable

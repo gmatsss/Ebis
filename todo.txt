@@ -29,3 +29,5 @@ selectbox check of resident generate report
 
 remove purpose muna
 
+
+report setup give variable inputs

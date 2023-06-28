@@ -79,7 +79,7 @@ exports.get_report = async (req, res) => {
         barangay: barangay,
         Status: 1,
       })
-      .sort({ DateModified: -1 });
+      .sort({ menuname: 1 });
 
     if (!x) throw createError(403, "Not found!");
     res.send(x);
@@ -248,7 +248,7 @@ exports.get_report_window = async (req, res) => {
         city: city,
         district: district,
         barangay: barangay,
-        menuname: "Lupon",
+        categoryname: "Lupon",
         Status: 1,
       })
       .sort({ DateModified: -1 });

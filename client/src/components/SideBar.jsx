@@ -19,8 +19,10 @@ import { AiFillHeart, AiTwotoneFileExclamation } from "react-icons/ai";
 import { BsCartCheck } from "react-icons/bs";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import SummarizeIcon from "@mui/icons-material/Summarize";
 import SidebarMenu from "./SidebarMenu";
 import GroupsIcon from "@mui/icons-material/Groups";
+import BusinessCenterIcon from "@mui/icons-material/BusinessCenter";
 const routes = [
   {
     path: "/",
@@ -65,7 +67,7 @@ const routes = [
   {
     path: "/Lupon_v4",
     name: "Lupon",
-    icon: <BiAnalyse />,
+    icon: <BusinessCenterIcon />,
   },
   {
     path: "/report",
@@ -75,7 +77,7 @@ const routes = [
   {
     path: "/report_generation",
     name: "Reports",
-    icon: <DescriptionIcon />,
+    icon: <SummarizeIcon />,
   },
   // {
   //   path: "/Location",

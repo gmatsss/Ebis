@@ -7,11 +7,13 @@ exports.get_resident = async (req, res) => {
     const barangay = req.params.barangay;
     const district = req.params.district;
 
-    const x = await resident.find({
-      district: { $eq: district },
-      barangay: { $eq: barangay },
-      status: 1,
-    });
+    const x = await resident
+      .find({
+        district: { $eq: district },
+        barangay: { $eq: barangay },
+        status: 1,
+      })
+      .sort({ firstname: -1 });
 
     if (!x) throw createError(403, "Not found!");
     res.send(x);

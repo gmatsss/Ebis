@@ -1,9 +1,4 @@
 import React, { useMemo, useState, useContext, useRef, useEffect } from "react";
-import Button from "@mui/material/Button";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import FeedIcon from "@mui/icons-material/Feed";
 import MaterialReactTable, {
   MRT_ToggleFiltersButton,
   MRT_ShowHideColumnsButton,
@@ -21,6 +16,7 @@ const Report_table = (props) => {
   const [data, setData] = useState({});
   const { sendRequest } = useFetch();
   const { user } = useContext(UserContext);
+
   const columns = useMemo(
     () => [
       {
@@ -28,13 +24,18 @@ const Report_table = (props) => {
         header: "ID",
       },
 
+      // {
+      //   accessorKey: "reportname",
+      //   header: "report name",
+      // },
+
       {
-        accessorKey: "reportname",
-        header: "Menu name",
+        accessorKey: "menuname",
+        header: "Title name",
       },
       {
         accessorKey: "categoryname",
-        header: "Category name",
+        header: "Category",
       },
       {
         accessorKey: "DateCreated",
@@ -63,6 +64,8 @@ const Report_table = (props) => {
   const getHandler = async (data, dat2) => {
     try {
       setData("");
+      props.rsetup("");
+      setRowSelection("");
       const result = await toast.promise(
         sendRequest(
           `/g/record/${user.barangay}/${user.district}/${user.city}/${user.province}/${user.region}/`,
@@ -118,13 +121,14 @@ const Report_table = (props) => {
             cursor: "pointer",
           },
         })}
+        enableStickyHeader
         positionToolbarAlertBanner="none"
         muiTableContainerProps={{ sx: { maxHeight: "650px" } }}
         onRowSelectionChange={setRowSelection} //connect internal row selection state to your own
         state={{ rowSelection, showProgressBars: data ? false : true }} //pass our managed row selection state to the table to use
         initialState={{
           pagination: { pageSize: 10, pageIndex: 0 },
-          density: "spacious",
+          density: "comfortable",
           columnVisibility: {
             gender: false,
             Createdby: false,

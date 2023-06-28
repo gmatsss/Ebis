@@ -1,12 +1,12 @@
 import Modal from "react-bootstrap/Modal";
 import React, { useState, useContext, useEffect, useMemo, useRef } from "react";
-import TextField from "@mui/material/TextField";
-import { Button } from "@mui/material";
+import { Button, TextField, InputLabel, FormControl } from "@mui/material";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
 import { toast } from "react-toastify";
 import { useFetch } from "../../api/report";
 import { useFetch as uselocation } from "../../api/location";
 import { UserContext } from "../../UserContext";
-import Select from "react-select";
 
 const Report_form = (props) => {
   const { user } = useContext(UserContext);
@@ -130,7 +130,7 @@ const Report_form = (props) => {
               error={!report.reportname ? true : false}
             />
             <TextField
-              label="Menu name"
+              label="Title"
               variant="outlined"
               className="m-2"
               value={report.menuname}
@@ -142,19 +142,39 @@ const Report_form = (props) => {
               }
               error={!report.menuname ? true : false}
             />
-            <TextField
-              label="Category name"
-              variant="outlined"
-              className="m-2"
-              value={report.categoryname}
-              onChange={(e) =>
-                setReport({
-                  ...report,
-                  categoryname: e.target.value,
-                })
-              }
-              error={!report.categoryname ? true : false}
-            />
+
+            <FormControl variant="outlined" className="m-2">
+              <InputLabel id="demo-simple-select-label">Category</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                label="Category"
+                value={report.categoryname}
+                onChange={(e) =>
+                  setReport({
+                    ...report,
+                    categoryname: e.target.value,
+                  })
+                }
+                error={!report.categoryname ? true : false}
+              >
+                <MenuItem
+                  value={
+                    !report.categoryname
+                      ? "Permit"
+                      : report.categoryname !== "Permit"
+                      ? "Permit"
+                      : report.categoryname
+                  }
+                >
+                  Permit
+                </MenuItem>
+                <MenuItem value={"Clearance"}>Clearance</MenuItem>
+                <MenuItem value={"Certificate"}>Certificate</MenuItem>
+                <MenuItem value={"Lupon"}>Lupon</MenuItem>
+                <MenuItem value={"Summary"}>Summary</MenuItem>
+              </Select>
+            </FormControl>
           </div>
         </Modal.Body>
         <Modal.Footer>

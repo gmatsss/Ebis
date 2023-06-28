@@ -68,8 +68,6 @@ exports.login = async (req, res) => {
 
     //return a response to user
 
-    const { username } = user;
-
     return res.json({
       message: "Success login",
       user,

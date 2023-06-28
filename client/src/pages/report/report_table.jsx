@@ -43,11 +43,11 @@ const Report_table = (props) => {
       },
       {
         accessorKey: "menuname",
-        header: "Menu name",
+        header: "Title",
       },
       {
         accessorKey: "categoryname",
-        header: "Category name",
+        header: "Category",
       },
       {
         accessorKey: "DateCreated",
@@ -113,8 +113,12 @@ const Report_table = (props) => {
   props.receivereload(getHandler);
   props.receiveonreloadsetup(getHandler);
 
+  let shouldlog = useRef(true);
   useEffect(() => {
-    getHandler();
+    if (shouldlog.current) {
+      shouldlog.current = false;
+      getHandler();
+    }
   }, []);
 
   useEffect(() => {
@@ -141,7 +145,6 @@ const Report_table = (props) => {
   };
 
   const handle_reset = () => {
-    setRowSelection("");
     setData("");
     setStatebutton(true);
   };
@@ -329,13 +332,14 @@ const Report_table = (props) => {
             cursor: "pointer",
           },
         })}
+        enableStickyHeader
         positionToolbarAlertBanner="none"
-        muiTableContainerProps={{ sx: { maxHeight: "350px" } }}
+        muiTableContainerProps={{ sx: { maxHeight: "550px" } }}
         onRowSelectionChange={setRowSelection} //connect internal row selection state to your own
         state={{ rowSelection, showProgressBars: data ? false : true }} //pass our managed row selection state to the table to use
         initialState={{
           pagination: { pageSize: 10, pageIndex: 0 },
-          density: "spacious",
+          density: "comfortable",
           columnVisibility: {
             gender: false,
             Createdby: false,

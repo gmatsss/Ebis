@@ -86,7 +86,7 @@ export class MyWindowPortal extends React.Component {
     // Step 3: open a new browser window and store a reference to it
     this.externalWindow = window.shownoModalDialog(
       "",
-      "Print Window",
+      "Report Gen",
       "dialogtop:50; dialogleft: 230; center:1; dialogwidth:1390; dialogheight:770; scroll:0; resizable:1"
     );
 

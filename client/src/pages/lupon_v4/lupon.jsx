@@ -12,13 +12,8 @@ import Lupon_respcomp from "./Lupon_comp&resp";
 import Lup_docs from "./lup_docs";
 import Lup_mem_act from "./Lup_mem_act";
 import Lupon_hearing from "./lupon_hearing";
-
-import { UserContext } from "../../UserContext";
-import { useFetch as uselocation } from "../../api/location";
-import { useEffect } from "react";
+import { Userloc } from "../../user_loc";
 const Lupon = () => {
-  const { sendRequest: sendlocation } = uselocation();
-  const { user } = useContext(UserContext);
   const [basicActive, setBasicActive] = useState("tab1");
 
   const handleBasicClick = (value) => {
@@ -74,46 +69,12 @@ const Lupon = () => {
     setDistab(parms);
   };
 
-  const [usr_loc, setUsr_loc] = useState({
-    region: "",
-    province: "",
-    city: "",
-    district: "",
-    barangay: "",
-  });
-  const loc = async () => {
-    const result = await sendlocation(
-      `/user/record/${user.barangay}/${user.district}/${user.city}/${user.province}/${user.region}/`,
-      "GET"
-    );
-    if (result && result.error) throw result.error;
-
-    setUsr_loc({
-      ...usr_loc,
-      region: result.region,
-      province: result.province,
-      city: result.city,
-      district: result.district,
-      barangay: result.barangay,
-    });
-  };
-  useEffect(() => {
-    loc();
-  }, []);
-
   return (
     <div className="container-fluid ">
       <div className="row">
         <div className="d-flex">
           <h1>Lupon</h1>
-          {usr_loc && (
-            <div className="m-1 mt-3 d-flex text-muted">
-              <h5>
-                {usr_loc.region},{usr_loc.province},{usr_loc.city},
-                {usr_loc.district},{usr_loc.barangay}
-              </h5>
-            </div>
-          )}
+          <Userloc />
         </div>
       </div>
       <div className="row">
